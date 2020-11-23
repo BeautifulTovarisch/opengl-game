@@ -105,7 +105,5 @@ GLint Engine_Init() {
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
 
-  glBindAttribLocation(program_object, 0, "v_position");
-
   return program_object;
 }
