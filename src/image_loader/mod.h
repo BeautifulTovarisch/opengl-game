@@ -5,6 +5,8 @@
 
 #include <GLES2/gl2.h>
 
+void IL_Cleanup(char *data);
+
 char *IL_Load(const char *filepath, int *width, int *height);
 
 GLuint IL_CreateTexture2D(int width, int height, char *data);

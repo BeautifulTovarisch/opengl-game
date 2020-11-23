@@ -15,7 +15,7 @@ char *IL_Load(const char *filepath, int *width, int *height) {
   return (char *)data;
 }
 
-void IL_Cleanup(unsigned char *data) {}
+void IL_Cleanup(char *data) { stbi_image_free(data); }
 
 GLuint IL_CreateTexture2D(int width, int height, char *data) {
   GLuint texture_id;
