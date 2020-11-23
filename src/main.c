@@ -10,6 +10,8 @@
 
 #include "shader/mod.h"
 
+#include "image_loader/mod.h"
+
 void process_input(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, GL_TRUE);
