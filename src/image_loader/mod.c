@@ -20,27 +20,25 @@ void IL_Cleanup(char *data) { stbi_image_free(data); }
 GLuint IL_CreateTexture2D(int width, int height, char *data) {
   GLuint texture_id;
 
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   glGenTextures(1, &texture_id);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture_id);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
-               GL_UNSIGNED_BYTE, data);
-
-  if (glGetError() != GL_NO_ERROR) {
-    fprintf(stderr, "Error creating image texture.\n");
-    return 0;
-  }
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  if (glGetError() != GL_NO_ERROR) {
-    fprintf(stderr, "Error applying texture parameters\n");
+  if (Logger_CheckGLErrors("Failed to apply texture parameters")) {
     return 0;
-  }
+  };
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+               GL_UNSIGNED_BYTE, data);
+
+  if (Logger_CheckGLErrors("Failed to create image texture")) {
+    return 0;
+  };
 
   return texture_id;
 }

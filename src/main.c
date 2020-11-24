@@ -81,8 +81,6 @@ int main() {
 
   GLuint texture_id = IL_CreateTexture2D(width, height, data);
 
-  glBindTexture(GL_TEXTURE_2D, texture_id);
-
   while (!glfwWindowShouldClose(window)) {
     process_input(window);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
