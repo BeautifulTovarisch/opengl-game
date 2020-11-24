@@ -15,19 +15,11 @@ int link_program(GLint program_object) {
 
   glLinkProgram(program_object);
   glGetProgramiv(program_object, GL_LINK_STATUS, &linked);
+
   if (!linked) {
-    GLint info_log_len = 0;
-    glGetProgramiv(program_object, GL_INFO_LOG_LENGTH, &info_log_len);
-
-    if (info_log_len > 1) {
-      GLchar *info_log = (GLchar *)malloc(sizeof(char) * info_log_len);
-
-      glGetProgramInfoLog(program_object, info_log_len, NULL, info_log);
-      fprintf(stderr, "Error linking program: %s\n", info_log);
-      free(info_log);
-    }
-
+    Logger_GetLogInfo("Error linking program", program_object, 0);
     glDeleteProgram(program_object);
+
     return 0;
   }
 

@@ -1,10 +1,10 @@
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "engine/mod.h"
 #include "image_loader/mod.h"
+#include "logger/mod.h"
 
 void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO,
                   GLuint program_object) {

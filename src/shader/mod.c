@@ -54,17 +54,7 @@ GLuint LoadShader(GLenum type, const char *file) {
   glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
 
   if (!compiled) {
-    GLint info_log_len = 0;
-
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_log_len);
-    if (info_log_len > 1) {
-      char *info_log = (char *)malloc(sizeof(char) * info_log_len);
-      glGetShaderInfoLog(shader, info_log_len, NULL, info_log);
-
-      fprintf(stderr, "Error compiling shader %s: %s\n", file, info_log);
-      free(info_log);
-    }
-
+    Logger_GetLogInfo("Error compiling shader", shader, 1);
     glDeleteShader(shader);
     return 0;
   }

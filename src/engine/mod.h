@@ -6,6 +6,7 @@
 #define GLFW_INCLUDE_ES2
 #include <GLFW/glfw3.h>
 
+#include "../logger/mod.h"
 #include "../shader/mod.h"
 
 void process_input(GLFWwindow *window);

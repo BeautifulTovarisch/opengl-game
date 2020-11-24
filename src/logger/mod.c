@@ -31,3 +31,28 @@ int Logger_CheckGLErrors(const char *message) {
 
   return num_errors;
 }
+
+// type 0|1 - Program or shader, respectively
+void Logger_GetLogInfo(const char *message, GLuint obj, int type) {
+  GLint info_log_len = 0;
+
+  if (type == 0) {
+    glGetProgramiv(obj, GL_INFO_LOG_LENGTH, &info_log_len);
+  } else {
+    glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &info_log_len);
+  }
+
+  GLchar *info_log = (GLchar *)malloc(sizeof(char) * info_log_len);
+
+  if (type == 0) {
+    glGetProgramInfoLog(obj, info_log_len, NULL, info_log);
+  } else {
+    glGetShaderInfoLog(obj, info_log_len, NULL, info_log);
+  }
+
+  if (info_log_len > 1) {
+    fprintf(stderr, "%s: %s\n", message, info_log);
+  }
+
+  free(info_log);
+}
