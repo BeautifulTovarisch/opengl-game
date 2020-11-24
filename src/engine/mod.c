@@ -62,26 +62,6 @@ GLFWwindow *init_window(int width, int height) {
 }
 
 GLint Engine_Init() {
-  GLbyte vector_shader_src[] = "#version 330 core\n"
-                               "attribute vec4 a_pos;\n"
-                               "attribute vec2 a_tex_coord;\n"
-                               "varying vec2 v_tex_coord;\n"
-                               "void main()\n"
-                               "{\n"
-                               "   gl_Position = a_pos;\n"
-                               "   v_tex_coord = a_tex_coord;\n"
-                               "}\0";
-
-  GLbyte fragment_shader_src[] =
-      "#version 330 core\n"
-      "precision mediump float;\n"
-      "varying vec2 v_tex_coord;\n"
-      "uniform sampler2D s_texture;\n"
-      "void main()\n"
-      "{\n"
-      "   gl_FragColor = texture2D(s_texture, v_tex_coord);\n"
-      "}\n\0";
-
   GLint program_object = glCreateProgram();
 
   if (!program_object) {
@@ -89,11 +69,10 @@ GLint Engine_Init() {
   }
 
   // Compile and attach shaders
-  GLuint vertex_shader =
-      LoadShader(GL_VERTEX_SHADER, (char *)vector_shader_src);
+  GLuint vertex_shader = LoadShader(GL_VERTEX_SHADER, "src/shader/vertex.glsl");
 
   GLuint fragment_shader =
-      LoadShader(GL_FRAGMENT_SHADER, (char *)fragment_shader_src);
+      LoadShader(GL_FRAGMENT_SHADER, "src/shader/fragment.glsl");
 
   glAttachShader(program_object, vertex_shader);
   glAttachShader(program_object, fragment_shader);

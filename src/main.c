@@ -6,11 +6,13 @@
 #include "engine/mod.h"
 #include "image_loader/mod.h"
 
-void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO) {
-  GLuint indices[3] = {0, 1, 3};
+void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO,
+                  GLuint program_object) {
+  GLuint indices[6] = {0, 1, 2, 0, 2, 3};
 
-  GLfloat vertices[9] = {0.0f, 0.5f, 0.0f,  -0.5f, -0.5f,
-                         0.0f, 0.5f, -0.5f, 0.0f};
+  GLfloat vertices[] = {-0.5f, 0.5f, 0.0f, 0.0f, 0.0f,  -0.5f, -0.5f,
+                        0.0f,  0.0f, 1.0f, 0.5f, -0.5f, 0.0f,  1.0f,
+                        1.0f,  0.5f, 0.5f, 0.0f, 1.0f,  0.0f};
 
   glGenVertexArrays(1, VAO);
   glGenBuffers(1, VBO);
@@ -25,10 +27,13 @@ void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO) {
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
                GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
+  GLint pos_location = glGetAttribLocation(program_object, "a_pos");
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glVertexAttribPointer(pos_location, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+                        (void *)0);
+  glEnableVertexAttribArray(pos_location);
+
+  glBindBuffer(GL_ARRAY_BUFFER, pos_location);
   glBindVertexArray(0);
 }
 
@@ -47,7 +52,7 @@ int main() {
 
   GLuint VBO, VAO, EBO;
 
-  init_buffers(&VBO, &VAO, &EBO);
+  init_buffers(&VBO, &VAO, &EBO, program_object);
 
   int width, height;
   char *data = IL_Load("assets/lenna.png", &width, &height);
@@ -56,6 +61,10 @@ int main() {
     fprintf(stderr, "Failed to load asset\n");
     return 0;
   }
+
+  GLuint texture_id = IL_CreateTexture2D(width, height, data);
+
+  glBindTexture(GL_TEXTURE_2D, texture_id);
 
   while (!glfwWindowShouldClose(window)) {
     process_input(window);
