@@ -41,7 +41,7 @@ void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO,
                GL_STATIC_DRAW);
 
   GLint pos_location = glGetAttribLocation(program_object, "a_pos");
-  GLint tex_location = glGetAttribLocation(program_object, "v_tex_coord");
+  GLint tex_location = glGetAttribLocation(program_object, "a_tex_coord");
 
   // Stride length 5 here to capture position and texture coordinates
   glVertexAttribPointer(pos_location, 3, GL_FLOAT, GL_FALSE,
@@ -49,6 +49,8 @@ void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO,
 
   glVertexAttribPointer(tex_location, 2, GL_FLOAT, GL_FALSE,
                         5 * sizeof(GLfloat), (void *)(3 * sizeof(GLfloat)));
+
+  Logger_CheckGLErrors("Error assigning attribute pointers");
 
   glEnableVertexAttribArray(pos_location);
   glEnableVertexAttribArray(tex_location);
