@@ -10,9 +10,22 @@ void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO,
                   GLuint program_object) {
   GLuint indices[6] = {0, 1, 2, 0, 2, 3};
 
-  GLfloat vertices[] = {-0.5f, 0.5f, 0.0f, 0.0f, 0.0f,  -0.5f, -0.5f,
-                        0.0f,  0.0f, 1.0f, 0.5f, -0.5f, 0.0f,  1.0f,
-                        1.0f,  0.5f, 0.5f, 0.0f, 1.0f,  0.0f};
+  GLfloat vertices[] = {// Position 0
+                        -0.5f, 0.5f, 0.0f,
+                        // Texture Coordinates 0
+                        0.0f, 0.0f,
+                        // Position 1
+                        -0.5f, -0.5f, 0.0f,
+                        // Texture Coordinates 1
+                        0.0f, 1.0f,
+                        // Position 2
+                        0.5f, -0.5f, 0.0f,
+                        // Texture Coordinates 2
+                        1.0f, 1.0f,
+                        // Position 3
+                        0.5f, 0.5f, 0.0f,
+                        // Texture Coordinates 3
+                        1.0f, 0.0f};
 
   glGenVertexArrays(1, VAO);
   glGenBuffers(1, VBO);
@@ -28,13 +41,17 @@ void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO,
                GL_STATIC_DRAW);
 
   GLint pos_location = glGetAttribLocation(program_object, "a_pos");
+  GLint tex_location = glGetAttribLocation(program_object, "v_tex_coord");
 
-  glVertexAttribPointer(pos_location, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-                        (void *)0);
+  // Stride length 5 here to capture position and texture coordinates
+  glVertexAttribPointer(pos_location, 3, GL_FLOAT, GL_FALSE,
+                        5 * sizeof(GLfloat), (void *)0);
+
+  glVertexAttribPointer(tex_location, 2, GL_FLOAT, GL_FALSE,
+                        5 * sizeof(GLfloat), (void *)(3 * sizeof(GLfloat)));
+
   glEnableVertexAttribArray(pos_location);
-
-  glBindBuffer(GL_ARRAY_BUFFER, pos_location);
-  glBindVertexArray(0);
+  glEnableVertexAttribArray(tex_location);
 }
 
 int main() {

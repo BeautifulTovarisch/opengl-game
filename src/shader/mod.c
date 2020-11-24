@@ -1,7 +1,7 @@
 #include "mod.h"
 
 const char *const *open_shader(const char *src) {
-  FILE *fp = fopen(src, "rb");
+  FILE *fp = fopen(src, "r");
 
   if (!fp) {
     fprintf(stderr, "Could not open shader file: %s\n", src);
@@ -40,7 +40,7 @@ GLuint LoadShader(GLenum type, const char *file) {
   const char *const *shader_src = open_shader(file);
 
   if (shader_src == NULL) {
-    fprintf(stderr, "Unable to read shader source\n");
+    fprintf(stderr, "Unable to read shader source.\n");
     return 0;
   }
 
@@ -61,7 +61,7 @@ GLuint LoadShader(GLenum type, const char *file) {
       char *info_log = (char *)malloc(sizeof(char) * info_log_len);
       glGetShaderInfoLog(shader, info_log_len, NULL, info_log);
 
-      fprintf(stderr, "Error compiling shader: %s\n", info_log);
+      fprintf(stderr, "Error compiling shader %s: %s\n", file, info_log);
       free(info_log);
     }
 
