@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "engine/mod.h"
-#include "image_loader/mod.h"
 #include "logger/mod.h"
+#include "texture/mod.h"
 
 void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO,
                   GLuint program_object) {
@@ -57,53 +57,47 @@ void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO,
 }
 
 int main() {
-  GLFWwindow *window = init_window(1024, 720);
+  Log(INFO, "hey");
+  /* GLFWwindow *window = Engine_CreateWindow(1024, 720); */
 
-  if (!window) {
-    return 0;
-  }
+  /* if (!window) { */
+  /*   return 0; */
+  /* } */
 
-  GLint program_object = Engine_Init();
+  /* GLint program_object = Engine_Init(); */
 
-  if (!program_object) {
-    return 0;
-  }
+  /* if (!program_object) { */
+  /*   return 0; */
+  /* } */
 
-  GLuint VBO, VAO, EBO;
+  /* int width, height; */
+  /* char *data = Texture_Load("assets/lenna.png", &width, &height); */
 
-  init_buffers(&VBO, &VAO, &EBO, program_object);
+  /* if (data == NULL) { */
+  /*   fprintf(stderr, "Failed to load asset\n"); */
+  /*   return 0; */
+  /* } */
 
-  int width, height;
-  char *data = IL_Load("assets/lenna.png", &width, &height);
+  /* GLuint texture_id = Texture_Create2D(width, height, data); */
 
-  if (data == NULL) {
-    fprintf(stderr, "Failed to load asset\n");
-    return 0;
-  }
+  /* while (!glfwWindowShouldClose(window)) { */
+  /*   process_input(window); */
+  /*   glClearColor(0.2f, 0.3f, 0.3f, 1.0f); */
+  /*   glClear(GL_COLOR_BUFFER_BIT); */
 
-  GLuint texture_id = IL_CreateTexture2D(width, height, data);
+  /*   glUseProgram(program_object); */
+  /*   glBindVertexArray(VAO); */
+  /*   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); */
 
-  while (!glfwWindowShouldClose(window)) {
-    process_input(window);
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+  /*   glfwSwapBuffers(window); */
+  /*   glfwPollEvents(); */
+  /* } */
 
-    glUseProgram(program_object);
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  /* glDeleteProgram(program_object); */
 
-    glfwSwapBuffers(window);
-    glfwPollEvents();
-  }
+  /* glfwTerminate(); */
+  /* glDeleteTextures(1, &texture_id); */
 
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
-  glDeleteBuffers(1, &EBO);
-  glDeleteProgram(program_object);
-
-  glfwTerminate();
-  glDeleteTextures(1, &texture_id);
-
-  IL_Cleanup(data);
+  /* Texture_Cleanup(data); */
   return 1;
 }

@@ -1,5 +1,10 @@
 #include "mod.h"
 
+// TODO :: Standardize logging
+
+const char *log_levels[] = {"TRACE",   "DEBUG", "INFO",
+                            "WARNING", "ERROR", "FATAL"};
+
 char *map_gl_err(GLenum err) {
   switch (err) {
   case GL_INVALID_ENUM:
@@ -18,6 +23,26 @@ char *map_gl_err(GLenum err) {
     return "Stack overflow";
   default:
     return "No Error";
+  }
+}
+
+void format_time(char *buf) {
+  time_t timer = time(NULL);
+  struct tm *tm_info = localtime(&timer);
+
+  strftime(buf, 25, "%Y-%m-%dT%H:%M:%S", tm_info);
+}
+
+void Log(Level level, const char *message) {
+  // Allocate buffer the size of an ISO date string
+  char time_buf[sizeof("1970-01-01T00:00:00Z")] = {0};
+
+  format_time(time_buf);
+
+  if (level >= ERROR) {
+    fprintf(stdout, "[%s]::%s %s\n", log_levels[level], time_buf, message);
+  } else {
+    fprintf(stderr, "[%s]::%s %s\n", log_levels[level], time_buf, message);
   }
 }
 

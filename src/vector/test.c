@@ -27,7 +27,6 @@ static void test_vector_divide(void **state) {
   assert_float_equal(result.y, 1.0, 0);
   assert_float_equal(result.z, 1.0, 0);
 
-  // cblas_sscal zeroes out vector if provided 0 scalar
   result = Vector_Scale(&input, 0);
 
   assert_float_equal(result.x, 0, 0);

@@ -12,7 +12,7 @@
 void process_input(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
-GLFWwindow *init_window(int width, int height);
+GLFWwindow *Engine_CreateWindow(int width, int height);
 
 GLint Engine_Init();
 

@@ -1,80 +1,54 @@
 #include "mod.h"
 
-void process_input(GLFWwindow *window) {
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window, GL_TRUE);
+void key_callback(GLFWwindow *window, int key, int scancode, int action,
+                  int mode) {
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+    glfwSetWindowShouldClose(window, 1);
   }
-}
+};
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
-int link_program(GLint program_object) {
-  int linked;
-
-  glLinkProgram(program_object);
-  glGetProgramiv(program_object, GL_LINK_STATUS, &linked);
-
-  if (!linked) {
-    Logger_GetLogInfo("Error linking program", program_object, 0);
-    glDeleteProgram(program_object);
-
-    return 0;
-  }
-
-  return 1;
-}
-
-GLFWwindow *init_window(int width, int height) {
+GLFWwindow *Engine_CreateWindow(int width, int height) {
   glfwInit();
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_RESIZABLE, 0);
 
-  GLFWwindow *window =
-      glfwCreateWindow(width, height, "Hello Triangle", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(width, height, "Breakout", NULL, NULL);
 
   if (window == NULL) {
-    fprintf(stderr, "Could not create window\n");
+    Log(ERROR, "Could not create window");
     glfwTerminate();
     return NULL;
   }
 
-  glfwMakeContextCurrent(window);
+  glfwSetKeyCallback(window, key_callback);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+  glViewport(0, 0, width, height);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)) {
-    fprintf(stderr, "Failed to initialize GLAD\n");
+    Log(ERROR, "Failed to initialize GLAD");
     return NULL;
   }
 
   return window;
 }
 
+// TODO :: Update Game object state to track program_object
 GLint Engine_Init() {
   GLint program_object = glCreateProgram();
 
   if (!program_object) {
     return 0;
   }
-
-  // Compile and attach shaders
-  GLuint vertex_shader = LoadShader(GL_VERTEX_SHADER, "src/shader/vertex.glsl");
-
-  GLuint fragment_shader =
-      LoadShader(GL_FRAGMENT_SHADER, "src/shader/fragment.glsl");
-
-  glAttachShader(program_object, vertex_shader);
-  glAttachShader(program_object, fragment_shader);
-
-  if (!link_program(program_object)) {
-    return 0;
-  }
-
-  glDeleteShader(vertex_shader);
-  glDeleteShader(fragment_shader);
 
   return program_object;
 }
