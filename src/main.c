@@ -102,6 +102,7 @@ int main() {
   glDeleteProgram(program_object);
 
   glfwTerminate();
+  glDeleteTextures(1, &texture_id);
 
   IL_Cleanup(data);
   return 1;

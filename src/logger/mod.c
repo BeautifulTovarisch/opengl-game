@@ -22,14 +22,12 @@ char *map_gl_err(GLenum err) {
 }
 
 int Logger_CheckGLErrors(const char *message) {
-  int num_errors = 0;
   GLenum err;
   while ((err = glGetError()) != GL_NO_ERROR) {
-    num_errors++;
     fprintf(stderr, "%s - OpenGL Error: %s\n", message, map_gl_err(err));
   }
 
-  return num_errors;
+  return err;
 }
 
 // type 0|1 - Program or shader, respectively
