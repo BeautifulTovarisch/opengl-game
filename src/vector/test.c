@@ -57,22 +57,31 @@ static void test_vector_magnitude(void **state) {
 }
 
 static void test_vector_normalize(void **state) {
-  Vector result = {3, 4};
-  Vector_Norm(&result);
+  Vector input = {3, 4};
+
+  Vector result = Vector_Norm(&input);
 
   assert_float_equal(result.x, 0.60, 0);
   assert_float_equal(result.y, 0.80, 0);
 }
 
+static void test_vector_dot(void **state) {
+  Vector a = {1, 2, 3};
+  Vector b = {4, -5, 6};
+
+  float result = Vector_Dot(&a, &b);
+
+  assert_float_equal(result, 12.0, 0);
+}
+
 int main(void) {
-  const struct CMUnitTest tests[] = {
-      /* cmocka_unit_test(test_vector_add), */
-      cmocka_unit_test(test_vector_divide),
-      cmocka_unit_test(test_vector_multiply),
-      /* cmocka_unit_test(test_vector_subtract), */
-      /* cmocka_unit_test(test_vector_magnitude), */
-      /* cmocka_unit_test(test_vector_normalize) */
-  };
+  const struct CMUnitTest tests[] = {cmocka_unit_test(test_vector_add),
+                                     cmocka_unit_test(test_vector_divide),
+                                     cmocka_unit_test(test_vector_multiply),
+                                     cmocka_unit_test(test_vector_subtract),
+                                     cmocka_unit_test(test_vector_dot),
+                                     cmocka_unit_test(test_vector_magnitude),
+                                     cmocka_unit_test(test_vector_normalize)};
 
   return cmocka_run_group_tests(tests, NULL, NULL);
 }
