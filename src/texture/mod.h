@@ -11,6 +11,6 @@ void Texture_Cleanup(char *data);
 
 char *Texture_Load(const char *filepath, int *width, int *height);
 
-GLuint Texture_Create2D(int width, int height, char *data);
+GLuint Texture_Create2D(unsigned int width, unsigned int height, char *data);
 
 #endif

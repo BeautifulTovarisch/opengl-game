@@ -45,7 +45,6 @@ GLFWwindow *Engine_CreateWindow(int width, int height) {
   return window;
 }
 
-// TODO :: Update Game object state to track program_object
 GLint Engine_Init() {
   GLint program_object = glCreateProgram();
 

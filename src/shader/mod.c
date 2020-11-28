@@ -1,9 +1,5 @@
 #include "mod.h"
 
-static const char *geom_src = "src/shader/glsl/geom.glsl";
-static const char *vertex_src = "src/shader/glsl/vertex.glsl";
-static const char *fragment_src = "src/shader/glsl/fragment.glsl";
-
 const char *const *open_shader(const char *src) {
   FILE *fp = fopen(src, "r");
 
@@ -42,7 +38,7 @@ const char *const *open_shader(const char *src) {
   return (const char *const *)buffer;
 }
 
-GLuint compile_shader(GLenum type, const char *file) {
+GLuint Shader_Compile(GLenum type, const char *file) {
   GLuint shader = glCreateShader(type);
 
   const char *const *shader_src = open_shader(file);
@@ -89,22 +85,23 @@ int link_program(GLint gl_program) {
   return 1;
 }
 
-// Load and compile shaders, link program object
-void Shader_Init() {
-  GLuint geom_shader = compile_shader(GL_GEOMETRY_SHADER, geom_src);
-  GLuint vertex_shader = compile_shader(GL_VERTEX_SHADER, vertex_src);
-  GLuint fragment_shader = compile_shader(GL_FRAGMENT_SHADER, fragment_src);
+/* // Load and compile shaders, link program object */
+/* void Shader_Init() { */
+/*   GLuint geom_shader = compile_shader(GL_GEOMETRY_SHADER, geom_src); */
+/*   GLuint vertex_shader = compile_shader(GL_VERTEX_SHADER, vertex_src); */
+/*   GLuint fragment_shader = compile_shader(GL_FRAGMENT_SHADER, fragment_src);
+ */
 
-  GLuint gl_program = glCreateProgram();
+/*   GLuint gl_program = glCreateProgram(); */
 
-  glAttachShader(gl_program, geom_shader);
-  glAttachShader(gl_program, vertex_shader);
-  glAttachShader(gl_program, fragment_shader);
+/*   glAttachShader(gl_program, geom_shader); */
+/*   glAttachShader(gl_program, vertex_shader); */
+/*   glAttachShader(gl_program, fragment_shader); */
 
-  link_program(gl_program);
+/*   link_program(gl_program); */
 
-  // Shaders unecessary after linking
-  glDeleteShader(geom_shader);
-  glDeleteShader(vertex_shader);
-  glDeleteShader(fragment_shader);
-}
+/*   // Shaders unecessary after linking */
+/*   glDeleteShader(geom_shader); */
+/*   glDeleteShader(vertex_shader); */
+/*   glDeleteShader(fragment_shader); */
+/* } */

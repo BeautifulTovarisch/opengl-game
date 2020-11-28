@@ -6,6 +6,8 @@
 
 #include "mod.h"
 
+#define PI 3.14159265358979323846
+
 // Mocks
 void Log(Level level, char const *message) {}
 
@@ -19,8 +21,36 @@ int array_equal(float a[16], float b[16]) {
   return 1;
 }
 
+/* Utility Tests
+ * -----------------------------------------------------------------------------
+ */
+
+// Enumerating 15-30 deg increments to serve as a quick cheatsheet
+static void test_to_radians(void **state) {
+  assert_float_equal(To_Rad(0), 0, 0);
+  assert_float_equal(To_Rad(30), PI / 6, 0);
+  assert_float_equal(To_Rad(45), PI / 4, 0);
+  assert_float_equal(To_Rad(60), PI / 3, 0);
+  assert_float_equal(To_Rad(90), PI / 2, 0);
+  assert_float_equal(To_Rad(120), 2 * PI / 3, 0);
+  assert_float_equal(To_Rad(135), 3 * PI / 4, 0);
+  assert_float_equal(To_Rad(150), 5 * PI / 6, 0);
+  assert_float_equal(To_Rad(180), PI, 0);
+  assert_float_equal(To_Rad(270), 3 * PI / 2, 0);
+  assert_float_equal(To_Rad(360), 2 * PI, 0);
+}
+
 /* Matrix Tests
- * --------------------------------------------------------------------------------
+ * -----------------------------------------------------------------------------
+ */
+
+/* Identity Matrix
+ * ---------
+ * |1 0 0 0|
+ * |0 1 0 0|
+ * |0 0 1 0|
+ * |0 0 0 1|
+ * ---------
  */
 static void test_identity_matrix(void **state) {
   Mat4 result;
@@ -31,8 +61,12 @@ static void test_identity_matrix(void **state) {
   assert_true(array_equal(expected, result));
 }
 
+/*  2  0  0 0
+ *  0  2  0 0
+ *  0  0 -2 0
+ * -1 -1 -1 1
+ */
 static void test_orthographic_matrix(void **state) {
-  //
   Mat4 result;
   Mat4 expected = {2, 0, 0, 0, 0, 2, 0, 0, 0, 0, -2, 0, -1, -1, -1, 1};
 
@@ -42,7 +76,7 @@ static void test_orthographic_matrix(void **state) {
 }
 
 /* Vector Tests
- * --------------------------------------------------------------------------------
+ * -----------------------------------------------------------------------------
  */
 static void test_vector_add(void **state) {
   Vector result = Vector_Add(&(Vector){0}, &(Vector){1, 1});
@@ -113,6 +147,8 @@ static void test_vector_dot(void **state) {
 
 int main(void) {
   const struct CMUnitTest tests[] = {
+      // Utility
+      cmocka_unit_test(test_to_radians),
       // Matrix
       cmocka_unit_test(test_identity_matrix),
       cmocka_unit_test(test_orthographic_matrix),

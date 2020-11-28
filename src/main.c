@@ -4,6 +4,7 @@
 
 #include "engine/mod.h"
 #include "game/mod.h"
+#include "linalg/mod.h"
 #include "logger/mod.h"
 #include "texture/mod.h"
 

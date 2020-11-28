@@ -6,6 +6,8 @@
 #define GLFW_INCLUDE_ES2
 #include <GLFW/glfw3.h>
 
+#include "../shader/mod.h"
+
 typedef enum {
   GAME_ACTIVE = 0,
   GAME_MENU = 1 << 0,

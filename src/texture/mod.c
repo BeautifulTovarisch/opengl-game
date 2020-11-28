@@ -7,7 +7,7 @@ char *Texture_Load(const char *filepath, int *width, int *height) {
   int comp;
   unsigned char *data = stbi_load(filepath, width, height, &comp, 4);
 
-  if (data == NULL) {
+  if (!data) {
     Log(ERROR, "Error loading texture");
     return '\0';
   }
@@ -15,9 +15,13 @@ char *Texture_Load(const char *filepath, int *width, int *height) {
   return (char *)data;
 }
 
+void Texture_Bind(GLuint texture_id) {
+  glBindTexture(GL_TEXTURE_2D, texture_id);
+}
+
 void Texture_Cleanup(char *data) { stbi_image_free(data); }
 
-GLuint Texture_Create2D(int width, int height, char *data) {
+GLuint Texture_Create2D(unsigned int width, unsigned int height, char *data) {
   GLuint texture_id;
 
   glGenTextures(1, &texture_id);
