@@ -8,6 +8,6 @@
 
 #include "../logger/mod.h"
 
-GLuint LoadShader(GLenum type, const char *shader_src);
+void Shader_Init();
 
 #endif

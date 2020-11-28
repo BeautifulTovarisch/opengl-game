@@ -20,10 +20,18 @@ GLFWwindow *Engine_CreateWindow(int width, int height) {
   glfwWindowHint(GLFW_RESIZABLE, 0);
 
   GLFWwindow *window = glfwCreateWindow(width, height, "Breakout", NULL, NULL);
+  glfwMakeContextCurrent(window);
+
+  if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)) {
+    Log(ERROR, "Failed to initialize GLAD");
+
+    return NULL;
+  }
 
   if (window == NULL) {
     Log(ERROR, "Could not create window");
     glfwTerminate();
+
     return NULL;
   }
 
@@ -33,11 +41,6 @@ GLFWwindow *Engine_CreateWindow(int width, int height) {
   glViewport(0, 0, width, height);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)) {
-    Log(ERROR, "Failed to initialize GLAD");
-    return NULL;
-  }
 
   return window;
 }

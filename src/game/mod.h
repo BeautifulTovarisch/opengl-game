@@ -1,6 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <glad/glad.h>
+
+#define GLFW_INCLUDE_ES2
+#include <GLFW/glfw3.h>
+
 typedef enum {
   GAME_ACTIVE = 0,
   GAME_MENU = 1 << 0,
@@ -14,8 +19,9 @@ typedef struct Game {
   GameState state;
 } Game;
 
-void Game_Update(float dt);
 void Game_Render();
+void Game_Update(float dt);
+void Game_Terminate();
 void Game_ProcessInput(float dt);
 
 Game *Game_Init(unsigned int width, unsigned int height);

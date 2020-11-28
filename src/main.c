@@ -3,8 +3,12 @@
 #include <string.h>
 
 #include "engine/mod.h"
+#include "game/mod.h"
 #include "logger/mod.h"
 #include "texture/mod.h"
+
+#define WIDTH 800
+#define HEIGHT 600
 
 void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO,
                   GLuint program_object) {
@@ -57,47 +61,29 @@ void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO,
 }
 
 int main() {
-  Log(INFO, "hey");
-  /* GLFWwindow *window = Engine_CreateWindow(1024, 720); */
+  GLFWwindow *window = Engine_CreateWindow(WIDTH, HEIGHT);
 
-  /* if (!window) { */
-  /*   return 0; */
-  /* } */
+  if (!window) {
+    Log(FATAL, "Window failed to initialize. Exiting...");
+    return 1;
+  }
 
-  /* GLint program_object = Engine_Init(); */
+  Game *game = Game_Init(WIDTH, HEIGHT);
 
-  /* if (!program_object) { */
-  /*   return 0; */
-  /* } */
+  float delta_time = 0.0f;
 
-  /* int width, height; */
-  /* char *data = Texture_Load("assets/lenna.png", &width, &height); */
+  while (!glfwWindowShouldClose(window)) {
 
-  /* if (data == NULL) { */
-  /*   fprintf(stderr, "Failed to load asset\n"); */
-  /*   return 0; */
-  /* } */
+    float frame_start = glfwGetTime();
 
-  /* GLuint texture_id = Texture_Create2D(width, height, data); */
+    Game_ProcessInput(delta_time);
+    Game_Update(delta_time);
+    Game_Render(window);
 
-  /* while (!glfwWindowShouldClose(window)) { */
-  /*   process_input(window); */
-  /*   glClearColor(0.2f, 0.3f, 0.3f, 1.0f); */
-  /*   glClear(GL_COLOR_BUFFER_BIT); */
+    delta_time = glfwGetTime() - frame_start;
+  }
 
-  /*   glUseProgram(program_object); */
-  /*   glBindVertexArray(VAO); */
-  /*   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); */
+  Game_Terminate();
 
-  /*   glfwSwapBuffers(window); */
-  /*   glfwPollEvents(); */
-  /* } */
-
-  /* glDeleteProgram(program_object); */
-
-  /* glfwTerminate(); */
-  /* glDeleteTextures(1, &texture_id); */
-
-  /* Texture_Cleanup(data); */
-  return 1;
+  return 0;
 }

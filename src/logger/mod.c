@@ -49,7 +49,10 @@ void Log(Level level, const char *message) {
 int Logger_CheckGLErrors(const char *message) {
   GLenum err;
   while ((err = glGetError()) != GL_NO_ERROR) {
-    fprintf(stderr, "%s - OpenGL Error: %s\n", message, map_gl_err(err));
+    char log[256] = {0};
+    snprintf(log, sizeof(log), "OpenGL Error: %s", map_gl_err(err));
+
+    Log(ERROR, log);
   }
 
   return err;

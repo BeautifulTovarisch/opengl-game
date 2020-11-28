@@ -8,27 +8,31 @@ const char *const *open_shader(const char *src) {
   FILE *fp = fopen(src, "r");
 
   if (!fp) {
-    fprintf(stderr, "Could not open shader file: %s\n", src);
+    char msg[256] = {0};
+    snprintf(msg, 256, "Could not open shader file: %s", src);
+    Log(ERROR, msg);
+
     return NULL;
   }
 
   fseek(fp, 0L, SEEK_END);
   long size = ftell(fp);
-
   rewind(fp);
 
   char *buffer = malloc(size);
 
   if (!buffer) {
     fclose(fp);
-    fprintf(stderr, "Failure to allocate memory for buffer.\n");
+    Log(ERROR, "Failure to allocate memory for buffer.");
+
     return NULL;
   }
 
   if (fread(buffer, size, 1, fp) != 1) {
     fclose(fp);
     free(buffer);
-    fprintf(stderr, "Failure reading shader file contents\n");
+    Log(ERROR, "Failure reading shader file contents");
+
     return NULL;
   }
 
@@ -44,7 +48,10 @@ GLuint compile_shader(GLenum type, const char *file) {
   const char *const *shader_src = open_shader(file);
 
   if (shader_src == NULL) {
-    fprintf(stderr, "Unable to read shader source.\n");
+    char msg[256] = {0};
+    snprintf(msg, sizeof(msg), "Unable to read shader source %s", file);
+
+    Log(ERROR, msg);
     return 0;
   }
 
@@ -58,7 +65,7 @@ GLuint compile_shader(GLenum type, const char *file) {
   glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
 
   if (!compiled) {
-    Logger_GetLogInfo("[Error]::Shader", shader, 1);
+    Logger_GetLogInfo("Failure compiling shader", shader, 1);
     glDeleteShader(shader);
     return 0;
   }

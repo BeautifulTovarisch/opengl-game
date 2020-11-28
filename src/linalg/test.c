@@ -6,6 +6,44 @@
 
 #include "mod.h"
 
+// Mocks
+void Log(Level level, char const *message) {}
+
+int array_equal(float a[16], float b[16]) {
+  for (int i = 0; i < 16; i++) {
+    if (a[i] != b[i]) {
+      return 0;
+    }
+  }
+
+  return 1;
+}
+
+/* Matrix Tests
+ * --------------------------------------------------------------------------------
+ */
+static void test_identity_matrix(void **state) {
+  Mat4 result;
+  Mat4 expected = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+
+  Matrix_Ident(result);
+
+  assert_true(array_equal(expected, result));
+}
+
+static void test_orthographic_matrix(void **state) {
+  //
+  Mat4 result;
+  Mat4 expected = {2, 0, 0, 0, 0, 2, 0, 0, 0, 0, -2, 0, -1, -1, -1, 1};
+
+  Matrix_Ortho(0, 1, 0, 1, 0, 1, result);
+
+  assert_true(array_equal(expected, result));
+}
+
+/* Vector Tests
+ * --------------------------------------------------------------------------------
+ */
 static void test_vector_add(void **state) {
   Vector result = Vector_Add(&(Vector){0}, &(Vector){1, 1});
 
@@ -74,13 +112,16 @@ static void test_vector_dot(void **state) {
 }
 
 int main(void) {
-  const struct CMUnitTest tests[] = {cmocka_unit_test(test_vector_add),
-                                     cmocka_unit_test(test_vector_divide),
-                                     cmocka_unit_test(test_vector_multiply),
-                                     cmocka_unit_test(test_vector_subtract),
-                                     cmocka_unit_test(test_vector_dot),
-                                     cmocka_unit_test(test_vector_magnitude),
-                                     cmocka_unit_test(test_vector_normalize)};
+  const struct CMUnitTest tests[] = {
+      // Matrix
+      cmocka_unit_test(test_identity_matrix),
+      cmocka_unit_test(test_orthographic_matrix),
+      // Vector
+      cmocka_unit_test(test_vector_add), cmocka_unit_test(test_vector_divide),
+      cmocka_unit_test(test_vector_multiply),
+      cmocka_unit_test(test_vector_subtract), cmocka_unit_test(test_vector_dot),
+      cmocka_unit_test(test_vector_magnitude),
+      cmocka_unit_test(test_vector_normalize)};
 
   return cmocka_run_group_tests(tests, NULL, NULL);
 }

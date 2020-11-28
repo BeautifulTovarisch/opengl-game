@@ -1,9 +1,55 @@
 #include "mod.h"
 
-// TODO :: Consider mutating vectors directly rather than creating new structs
+// TODO :: Write utility to map 2d to 1d array indices
+
+// Utility to guard against unintialized arrays
+void zero_array(Mat4 mat) {
+  for (int i = 0; i < ROWS * COLS; i++) {
+    mat[i] = 0.0;
+  }
+}
 
 Vector array_to_vec(float vec[]) {
   return (Vector){.x = vec[0], .y = vec[1], .z = vec[2]};
+}
+
+/* Identity Matrix
+ * ---------
+ * |1 0 0 0|
+ * |0 1 0 0|
+ * |0 0 1 0|
+ * |0 0 0 1|
+ * ---------
+ */
+void Matrix_Ident(Mat4 mat) {
+  zero_array(mat);
+
+  mat[0] = 1;
+  mat[5] = 1;
+  mat[10] = 1;
+  mat[15] = 1;
+}
+
+// Orthographic projection
+// Projects visible coordinates without perspective
+void Matrix_Ortho(float left, float right, float bottom, float top, float near,
+                  float far, Mat4 mat) {
+
+  //  Guard against divide by zero
+  if (!(right - left) || !(top - bottom) || !(far - near)) {
+    Log(ERROR, "Expression resulting in division by zero.");
+    return;
+  }
+
+  zero_array(mat);
+
+  mat[0] = 2.0f / (right - left);
+  mat[5] = 2.0f / (top - bottom);
+  mat[10] = -2.0f / (far - near);
+  mat[12] = -(right + left) / (right - left);
+  mat[13] = -(top + bottom) / (top - bottom);
+  mat[14] = -(far + near) / (far - near);
+  mat[15] = 1.0f;
 }
 
 Vector Vector_Add(Vector *a, Vector *b) {
