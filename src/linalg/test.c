@@ -11,14 +11,17 @@
 // Mocks
 void Log(Level level, char const *message) {}
 
-int array_equal(float a[16], float b[16]) {
-  for (int i = 0; i < 16; i++) {
-    if (a[i] != b[i]) {
-      return 0;
-    }
-  }
+void vector_equal(Vector a, Vector b) {
+  assert_float_equal(a.x, b.x, 10E-6);
+  assert_float_equal(a.y, b.y, 10E-6);
+  assert_float_equal(a.z, b.z, 10E-6);
+  assert_float_equal(a.w, b.w, 10E-6);
+}
 
-  return 1;
+void array_equal(float a[16], float b[16]) {
+  for (int i = 0; i < 16; i++) {
+    assert_float_equal(a[i], b[i], 0);
+  }
 }
 
 /* Utility Tests
@@ -40,6 +43,19 @@ static void test_to_radians(void **state) {
   assert_float_equal(To_Rad(360), 2 * PI, 0);
 }
 
+static void test_to_quat(void **state) {
+  // No Rotation
+  vector_equal(To_Quat((Vector){0, 0, 0}), (Vector){0, 0, 0, 1});
+
+  // 90 deg x
+  vector_equal(To_Quat((Vector){PI / 2, 0, 0}),
+               (Vector){0.707107f, 0, 0, 0.707107f});
+
+  // 45 deg z
+  vector_equal(To_Quat((Vector){0, 0, PI / 4}),
+               (Vector){0, 0, 0.382683, 0.923880});
+}
+
 /* Matrix Tests
  * -----------------------------------------------------------------------------
  */
@@ -58,7 +74,7 @@ static void test_identity_matrix(void **state) {
 
   Matrix_Ident(result);
 
-  assert_true(array_equal(expected, result));
+  array_equal(expected, result);
 }
 
 /*  2  0  0 0
@@ -72,7 +88,7 @@ static void test_orthographic_matrix(void **state) {
 
   Matrix_Ortho(0, 1, 0, 1, 0, 1, result);
 
-  assert_true(array_equal(expected, result));
+  array_equal(expected, result);
 }
 
 /* Vector Tests
@@ -148,7 +164,7 @@ static void test_vector_dot(void **state) {
 int main(void) {
   const struct CMUnitTest tests[] = {
       // Utility
-      cmocka_unit_test(test_to_radians),
+      cmocka_unit_test(test_to_quat), cmocka_unit_test(test_to_radians),
       // Matrix
       cmocka_unit_test(test_identity_matrix),
       cmocka_unit_test(test_orthographic_matrix),

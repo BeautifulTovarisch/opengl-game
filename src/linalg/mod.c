@@ -17,6 +17,8 @@ Vector array_to_vec(float vec[]) {
  * -----------------------------------------------------------------------------
  */
 float To_Rad(float deg) { return deg * ((float)M_PI / 180); }
+
+// NOTE :: Rotation vector must be in radians.
 Vector To_Quat(Vector v) {
   float cosy = cos(v.z * 0.5f);
   float siny = sin(v.z * 0.5f);
