@@ -56,16 +56,81 @@ static void test_to_quat(void **state) {
                (Vector){0.382683f, 0, 0, 0.923880f});
 }
 
-static void test_quat_mult(void **state) {
-  Vector q1 = {0, 0.707107f, 0, 0.707107f};
-  Vector q2 = {0.382683f, 0, 0, 0.923880f};
+/* Vector Tests
+ * -----------------------------------------------------------------------------
+ */
+static void test_vector_add(void **state) {
+  Vector result = Vector_Add((Vector){0}, (Vector){1, 1});
 
-  vector_equal(Quat_Mult(q2, q1),
-               (Vector){0.270598f, 0.653281f, 0.270598f, 0.653281});
+  assert_float_equal(result.x, 1, 0);
+  assert_float_equal(result.y, 1, 0);
+
+  result = Vector_Add((Vector){0}, (Vector){-1, -1});
+
+  assert_float_equal(result.x, -1, 0);
+  assert_float_equal(result.y, -1, 0);
 }
 
-static void test_quat_inverse(void **state) {
-  vector_equal(Quat_Inverse((Vector){0, 1, 0, 1}), (Vector){0, -0.5f, 0, 0.5f});
+static void test_vector_divide(void **state) {
+  Vector input = {.x = 2, .y = 2, .z = 2};
+
+  Vector result = Vector_Scale(input, 0.5);
+
+  assert_float_equal(result.x, 1.0, 0);
+  assert_float_equal(result.y, 1.0, 0);
+  assert_float_equal(result.z, 1.0, 0);
+
+  result = Vector_Scale(input, 0);
+
+  assert_float_equal(result.x, 0, 0);
+  assert_float_equal(result.y, 0, 0);
+  assert_float_equal(result.z, 0, 0);
+};
+
+static void test_vector_subtract(void **state) {
+  Vector input = {1, 1};
+  Vector result = Vector_Sub(input, (Vector){1, 1});
+
+  assert_float_equal(result.x, 0, 0);
+  assert_float_equal(result.y, 0, 0);
+}
+
+static void test_vector_multiply(void **state) {
+  Vector input = {1, 1};
+
+  Vector result = Vector_Scale(input, 2);
+
+  assert_float_equal(result.x, 2.0, 0);
+  assert_float_equal(result.y, 2.0, 0);
+}
+
+static void test_vector_magnitude(void **state) {
+  assert_float_equal(Vector_Mag((Vector){3, 4}), 5.0, 0);
+}
+
+static void test_vector_normalize(void **state) {
+  Vector input = {3, 4};
+
+  Vector result = Vector_Norm(input);
+
+  assert_float_equal(result.x, 0.60, 0);
+  assert_float_equal(result.y, 0.80, 0);
+}
+
+static void test_vector_dot(void **state) {
+  Vector a = {1, 2, 3};
+  Vector b = {4, -5, 6};
+
+  float result = Vector_Dot(a, b);
+
+  assert_float_equal(result, 12.0, 0);
+}
+
+static void test_vector_cross(void **state) {
+  Vector v1 = {3, -3, 1};
+  Vector v2 = {4, 9, 2};
+
+  vector_equal(Vector_Cross(v1, v2), (Vector){-15, -2, 39});
 }
 
 /* Matrix Tests
@@ -105,74 +170,26 @@ static void test_orthographic_matrix(void **state) {
   array_equal(expected, result);
 }
 
-/* Vector Tests
+/* Quaternion Tests
  * -----------------------------------------------------------------------------
  */
-static void test_vector_add(void **state) {
-  Vector result = Vector_Add(&(Vector){0}, &(Vector){1, 1});
+static void test_quat_mult(void **state) {
+  Vector q1 = {0, 0.707107f, 0, 0.707107f};
+  Vector q2 = {0.382683f, 0, 0, 0.923880f};
 
-  assert_float_equal(result.x, 1, 0);
-  assert_float_equal(result.y, 1, 0);
-
-  result = Vector_Add(&(Vector){0}, &(Vector){-1, -1});
-
-  assert_float_equal(result.x, -1, 0);
-  assert_float_equal(result.y, -1, 0);
+  vector_equal(Quat_Mult(q2, q1),
+               (Vector){0.270598f, 0.653281f, 0.270598f, 0.653281});
 }
 
-static void test_vector_divide(void **state) {
-  Vector input = {.x = 2, .y = 2, .z = 2};
-
-  Vector result = Vector_Scale(&input, 0.5);
-
-  assert_float_equal(result.x, 1.0, 0);
-  assert_float_equal(result.y, 1.0, 0);
-  assert_float_equal(result.z, 1.0, 0);
-
-  result = Vector_Scale(&input, 0);
-
-  assert_float_equal(result.x, 0, 0);
-  assert_float_equal(result.y, 0, 0);
-  assert_float_equal(result.z, 0, 0);
-};
-
-static void test_vector_subtract(void **state) {
-  Vector input = {1, 1};
-  Vector result = Vector_Sub(&input, &(Vector){1, 1});
-
-  assert_float_equal(result.x, 0, 0);
-  assert_float_equal(result.y, 0, 0);
+static void test_quat_inverse(void **state) {
+  vector_equal(Quat_Inverse((Vector){0, 1, 0, 1}), (Vector){0, -0.5f, 0, 0.5f});
 }
 
-static void test_vector_multiply(void **state) {
-  Vector input = {1, 1};
+static void test_quat_rotation(void **state) {
+  Vector q = {0.270598f, 0.653281f, 0.270598f, 0.653281};
 
-  Vector result = Vector_Scale(&input, 2);
-
-  assert_float_equal(result.x, 2.0, 0);
-  assert_float_equal(result.y, 2.0, 0);
-}
-
-static void test_vector_magnitude(void **state) {
-  assert_float_equal(Vector_Mag(&(Vector){3, 4}), 5.0, 0);
-}
-
-static void test_vector_normalize(void **state) {
-  Vector input = {3, 4};
-
-  Vector result = Vector_Norm(&input);
-
-  assert_float_equal(result.x, 0.60, 0);
-  assert_float_equal(result.y, 0.80, 0);
-}
-
-static void test_vector_dot(void **state) {
-  Vector a = {1, 2, 3};
-  Vector b = {4, -5, 6};
-
-  float result = Vector_Dot(&a, &b);
-
-  assert_float_equal(result, 12.0, 0);
+  vector_equal(Quat_Rot(q, (Vector){1, 0, 0}),
+               (Vector){0, 0.707107, -0.707107});
 }
 
 int main(void) {
@@ -185,11 +202,13 @@ int main(void) {
       cmocka_unit_test(test_vector_subtract), cmocka_unit_test(test_vector_dot),
       cmocka_unit_test(test_vector_magnitude),
       cmocka_unit_test(test_vector_normalize),
+      cmocka_unit_test(test_vector_cross),
       // Matrix
       cmocka_unit_test(test_identity_matrix),
       cmocka_unit_test(test_orthographic_matrix),
       // Quaternion
-      cmocka_unit_test(test_quat_mult), cmocka_unit_test(test_quat_inverse)};
+      cmocka_unit_test(test_quat_mult), cmocka_unit_test(test_quat_inverse),
+      cmocka_unit_test(test_quat_rotation)};
 
   return cmocka_run_group_tests(tests, NULL, NULL);
 }

@@ -37,62 +37,62 @@ Vector To_Quat(Vector v) {
                   .w = cosr * cosp * cosy + sinr * sinp * siny};
 }
 
-/* Vector
+/* Vectors
  * -----------------------------------------------------------------------------
  */
-Vector Vector_Add(Vector *a, Vector *b) {
-  float v1[] = {a->x, a->y, a->z};
-  float v2[] = {b->x, b->y, b->z};
+Vector Vector_Add(Vector a, Vector b) {
+  float v1[] = {a.x, a.y, a.z};
+  float v2[] = {b.x, b.y, b.z};
 
   cblas_saxpy(3, 1, v1, 1, v2, 1);
 
   return array_to_vec(v2);
 }
 
-Vector Vector_Scale(Vector *v, float scalar) {
-  float vec[] = {v->x, v->y, v->z};
+Vector Vector_Scale(Vector v, float scalar) {
+  float vec[] = {v.x, v.y, v.z};
 
   cblas_sscal(3, scalar, vec, 1);
 
   return array_to_vec(vec);
 }
 
-Vector Vector_Sub(Vector *a, Vector *b) {
-  float v1[] = {a->x, a->y, a->z};
-  float v2[] = {b->x, b->y, b->z};
+Vector Vector_Sub(Vector a, Vector b) {
+  float v1[] = {a.x, a.y, a.z};
+  float v2[] = {b.x, b.y, b.z};
 
-  // Scalar is -1 here -> a + (-b)
+  // Scalar is -1 here . a + (-b)
   cblas_saxpy(3, -1, v1, 1, v2, 1);
 
   return array_to_vec(v2);
 }
 
 // TODO :: Consider whether to use complex or real dot product
-float Vector_Dot(Vector *a, Vector *b) {
-  float v1[] = {a->x, a->y, a->z};
-  float v2[] = {b->x, b->y, b->z};
+float Vector_Dot(Vector a, Vector b) {
+  float v1[] = {a.x, a.y, a.z};
+  float v2[] = {b.x, b.y, b.z};
 
   return cblas_sdot(3, v1, 1, v2, 1);
 };
 
-float Vector_Mag(Vector *v) {
-  float vec[] = {v->x, v->y, v->z};
+float Vector_Mag(Vector v) {
+  float vec[] = {v.x, v.y, v.z};
 
   return cblas_snrm2(3, vec, 1);
 }
 
-Vector Vector_Norm(Vector *v) {
+Vector Vector_Norm(Vector v) {
   // Divide by magnitude
   return Vector_Scale(v, 1.0 / Vector_Mag(v));
 };
 
-Vector Vector_Cross(Vector *a, Vector *b) {
-  return (Vector){.x = (a->y * b->z) - (a->z * b->y),
-                  .y = (a->z * b->x) - (a->x * b->z),
-                  .z = (a->x * b->y) - (a->y * b->x)};
+Vector Vector_Cross(Vector a, Vector b) {
+  return (Vector){.x = (a.y * b.z) - (a.z * b.y),
+                  .y = (a.z * b.x) - (a.x * b.z),
+                  .z = (a.x * b.y) - (a.y * b.x)};
 }
 
-/* Matrix
+/* Matrices
  * -----------------------------------------------------------------------------
  */
 
@@ -155,6 +155,14 @@ void Matrix_ScaleVec(Mat4 mat, Vector v){};
 /* Quaternions
  * -----------------------------------------------------------------------------
  */
+Vector Quat_Rot(Vector q, Vector v) {
+  Vector v1 = Vector_Scale(q, 2.0f * Vector_Dot(q, v));
+  Vector v2 = Vector_Scale(v, q.w * q.w - Vector_Dot(q, q));
+  Vector v3 = Vector_Scale(Vector_Cross(q, v), 2.0f * q.w);
+
+  return Vector_Add(Vector_Add(v1, v2), v3);
+}
+
 Vector Quat_Mult(Vector a, Vector b) {
   return (Vector){.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
                   .y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
