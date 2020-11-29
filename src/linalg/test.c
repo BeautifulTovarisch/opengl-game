@@ -52,8 +52,20 @@ static void test_to_quat(void **state) {
                (Vector){0.707107f, 0, 0, 0.707107f});
 
   // 45 deg z
-  vector_equal(To_Quat((Vector){0, 0, PI / 4}),
-               (Vector){0, 0, 0.382683, 0.923880});
+  vector_equal(To_Quat((Vector){PI / 4, 0, 0}),
+               (Vector){0.382683f, 0, 0, 0.923880f});
+}
+
+static void test_quat_mult(void **state) {
+  Vector q1 = {0, 0.707107f, 0, 0.707107f};
+  Vector q2 = {0.382683f, 0, 0, 0.923880f};
+
+  vector_equal(Quat_Mult(q2, q1),
+               (Vector){0.270598f, 0.653281f, 0.270598f, 0.653281});
+}
+
+static void test_quat_inverse(void **state) {
+  vector_equal(Quat_Inverse((Vector){0, 1, 0, 1}), (Vector){0, -0.5f, 0, 0.5f});
 }
 
 /* Matrix Tests
@@ -77,10 +89,12 @@ static void test_identity_matrix(void **state) {
   array_equal(expected, result);
 }
 
-/*  2  0  0 0
- *  0  2  0 0
- *  0  0 -2 0
- * -1 -1 -1 1
+/* ------------
+ * | 2  0  0 0|
+ * | 0  2  0 0|
+ * | 0  0 -2 0|
+ * |-1 -1 -1 1|
+ * ------------
  */
 static void test_orthographic_matrix(void **state) {
   Mat4 result;
@@ -165,15 +179,17 @@ int main(void) {
   const struct CMUnitTest tests[] = {
       // Utility
       cmocka_unit_test(test_to_quat), cmocka_unit_test(test_to_radians),
-      // Matrix
-      cmocka_unit_test(test_identity_matrix),
-      cmocka_unit_test(test_orthographic_matrix),
       // Vector
       cmocka_unit_test(test_vector_add), cmocka_unit_test(test_vector_divide),
       cmocka_unit_test(test_vector_multiply),
       cmocka_unit_test(test_vector_subtract), cmocka_unit_test(test_vector_dot),
       cmocka_unit_test(test_vector_magnitude),
-      cmocka_unit_test(test_vector_normalize)};
+      cmocka_unit_test(test_vector_normalize),
+      // Matrix
+      cmocka_unit_test(test_identity_matrix),
+      cmocka_unit_test(test_orthographic_matrix),
+      // Quaternion
+      cmocka_unit_test(test_quat_mult), cmocka_unit_test(test_quat_inverse)};
 
   return cmocka_run_group_tests(tests, NULL, NULL);
 }

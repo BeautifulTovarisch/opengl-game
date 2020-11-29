@@ -18,7 +18,9 @@ Vector array_to_vec(float vec[]) {
  */
 float To_Rad(float deg) { return deg * ((float)M_PI / 180); }
 
-// NOTE :: Rotation vector must be in radians.
+/* Vector -> Quaternion conversion
+ * NOTE :: Rotation vector must be in radians.
+ */
 Vector To_Quat(Vector v) {
   float cosy = cos(v.z * 0.5f);
   float siny = sin(v.z * 0.5f);
@@ -149,3 +151,22 @@ void Matrix_Trans(Mat4 mat, Vector v) {
 };
 
 void Matrix_ScaleVec(Mat4 mat, Vector v){};
+
+/* Quaternions
+ * -----------------------------------------------------------------------------
+ */
+Vector Quat_Mult(Vector a, Vector b) {
+  return (Vector){.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+                  .y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+                  .z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
+                  .w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z};
+}
+
+Vector Quat_Inverse(Vector q) {
+  float scalar = 1 / (q.w * q.w + q.x * q.x + q.y * q.y + q.z * q.z);
+
+  return (Vector){.x = -q.x * scalar,
+                  .y = -q.y * scalar,
+                  .z = -q.z * scalar,
+                  .w = q.w * scalar};
+}
