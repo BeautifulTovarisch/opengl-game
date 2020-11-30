@@ -228,7 +228,16 @@ static void test_scaling_matrix(void **state) {
 }
 
 static void test_translation_matrix(void **state) {
-  //
+  Mat4 trans;
+  identity_matrix(trans);
+
+  trans[3] = 1;
+  trans[7] = 2;
+  trans[11] = 3;
+
+  Matrix_Trans((Vector){1, 1, 1}, trans);
+
+  array_equal(trans, (Mat4){1, 0, 0, 2, 0, 1, 0, 3, 0, 0, 1, 4, 0, 0, 0, 1});
 }
 
 /* Quaternion Tests
@@ -269,6 +278,7 @@ int main(void) {
       cmocka_unit_test(test_orthographic_matrix),
       cmocka_unit_test(test_matrix_multiply),
       cmocka_unit_test(test_scaling_matrix),
+      cmocka_unit_test(test_translation_matrix),
       // Quaternion
       cmocka_unit_test(test_quat_mult), cmocka_unit_test(test_quat_inverse),
       cmocka_unit_test(test_quat_rotation)};

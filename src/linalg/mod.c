@@ -168,9 +168,11 @@ void Matrix_Mult(Mat4 m1, Mat4 m2) {
 void Matrix_Trans(Vector v, Mat4 mat) {
   Mat4 trans;
 
-  trans[12] = v.x;
-  trans[13] = v.y;
-  trans[14] = v.z;
+  Matrix_Ident(trans);
+
+  trans[3] = v.x;
+  trans[7] = v.y;
+  trans[11] = v.z;
 
   Matrix_Mult(mat, trans);
 
