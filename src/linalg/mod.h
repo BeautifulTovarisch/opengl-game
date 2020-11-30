@@ -32,10 +32,6 @@ typedef float Mat4[ROWS * COLS];
 float To_Rad(float deg);
 Vector To_Quat(Vector v);
 
-Vector Quat_Rot(Vector q, Vector v);
-Vector Quat_Mult(Vector a, Vector b);
-Vector Quat_Inverse(Vector a);
-
 Vector Vector_Add(Vector v1, Vector v2);
 Vector Vector_Sub(Vector v1, Vector v2);
 Vector Vector_Norm(Vector v);
@@ -45,13 +41,15 @@ Vector Vector_Cross(Vector v1, Vector v2);
 float Vector_Dot(Vector v1, Vector v2);
 float Vector_Mag(Vector v);
 
-void Matrix_Rot(Mat4 mat, float rad, Vector v);
 void Matrix_Ident(Mat4 mat);
 void Matrix_Ortho(float left, float right, float bottom, float top, float near,
                   float far, Mat4 mat);
-void Matrix_Mult(Mat4 a, Mat4 b);
-void Matrix_Scale(Mat4 mat, Vector v);
-void Matrix_Trans(Mat4 mat, Vector v);
-void Matrix_ScaleVec(Mat4 mat, Vector v);
+void Matrix_Mult(Mat4 m1, Mat4 out);
+void Matrix_Trans(Vector v, Mat4 mat);
+void Matrix_Scale(Vector v, Mat4 mat);
+
+Vector Quat_Rot(Vector q, Vector v);
+Vector Quat_Mult(Vector a, Vector b);
+Vector Quat_Inverse(Vector a);
 
 #endif

@@ -14,9 +14,9 @@
 
 typedef enum { TRACE, DEBUG, INFO, WARNING, ERROR, FATAL } Level;
 
-void Log(Level level, const char *message);
-
 int Logger_CheckGLErrors(const char *message);
+
+void Log(Level level, const char *message);
 void Logger_GetLogInfo(const char *message, GLuint obj, int type);
 
 #endif

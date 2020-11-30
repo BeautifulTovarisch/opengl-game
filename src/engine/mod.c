@@ -44,13 +44,3 @@ GLFWwindow *Engine_CreateWindow(int width, int height) {
 
   return window;
 }
-
-GLint Engine_Init() {
-  GLint program_object = glCreateProgram();
-
-  if (!program_object) {
-    return 0;
-  }
-
-  return program_object;
-}

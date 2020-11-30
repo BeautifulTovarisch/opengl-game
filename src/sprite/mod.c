@@ -19,15 +19,12 @@ void Sprite_Init(GLuint VBO, GLuint VAO) {
 
 void Sprite_Draw(GLuint texture, Vector pos, Vector size, Vector color,
                  float rot, GLuint VAO) {
-  Mat4 model;
-  Matrix_Ident(model);
+  Mat4 model = {};
   // Translate to Sprite position
-  Matrix_Trans(model, pos);
+  Matrix_Trans(pos, model);
   // Translate rotation to center of sprite (1/2 width,height);
-  Matrix_Trans(model, (Vector){.x = size.x / 2, .y = size.y / 2, .z = 0});
-  Matrix_Rot(model, To_Rad(rot),
-             (Vector){.x = size.x / -2, .y = size.y / -2, .z = 0});
-  Matrix_ScaleVec(model, size);
+  Matrix_Trans((Vector){.x = size.x / 2, .y = size.y / 2, .z = 0}, model);
+  Matrix_Scale(size, model);
 
   glBindTexture(GL_TEXTURE_2D, texture);
 

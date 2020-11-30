@@ -8,6 +8,7 @@
 
 #include "../logger/mod.h"
 
-void Shader_Init();
+int Shader_Link(GLint gl_program);
+GLuint Shader_Compile(GLenum type, const char *file, GLuint prog);
 
 #endif

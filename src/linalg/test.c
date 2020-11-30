@@ -24,6 +24,18 @@ void array_equal(float a[16], float b[16]) {
   }
 }
 
+// Separate utility to avoid coupling API method with tests
+void identity_matrix(Mat4 m) {
+  for (int i = 0; i < 16; i++) {
+    m[i] = 0;
+  }
+
+  m[0] = 1;
+  m[5] = 1;
+  m[10] = 1;
+  m[15] = 1;
+}
+
 /* Utility Tests
  * -----------------------------------------------------------------------------
  */
@@ -170,6 +182,55 @@ static void test_orthographic_matrix(void **state) {
   array_equal(expected, result);
 }
 
+static void test_matrix_multiply(void **state) {
+  Mat4 translate = {1, 0, 0, 1, 0, 1, 0, 2, 0, 0, 1, 3, 0, 0, 0, 1};
+  Mat4 scale = {2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1};
+
+  Mat4 identity;
+  identity_matrix(identity);
+
+  /* Multiplication by identity matrix
+   *
+   * |1 0 0 1|   |1 0 0 0|
+   * |0 1 0 2|   |0 1 0 0|
+   * |0 0 1 3| * |0 0 1 0|
+   * |0 0 0 1|   |0 0 0 1|
+   */
+  Matrix_Mult(translate, identity);
+  array_equal(translate, identity);
+
+  /* Translation * Scale
+   *
+   * |1 0 0 1|   |2 0 0 0|
+   * |0 1 0 2|   |0 2 0 0|
+   * |0 0 1 3| * |0 0 2 0|
+   * |0 0 0 1|   |0 0 0 1|
+   */
+  Matrix_Mult(translate, scale);
+
+  array_equal(scale, (Mat4){2, 0, 0, 1, 0, 2, 0, 2, 0, 0, 2, 3, 0, 0, 0, 1});
+
+  Mat4 m1 = {3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1};
+  Mat4 m2 = {2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1};
+
+  Matrix_Mult(m1, m2);
+
+  array_equal(m2, (Mat4){6, 0, 0, 0, 0, 6, 0, 0, 0, 0, 6, 0, 0, 0, 0, 1});
+}
+
+static void test_scaling_matrix(void **state) {
+  Mat4 scale;
+  identity_matrix(scale);
+
+  Matrix_Scale((Vector){2, 3, 4}, scale);
+
+  array_equal(scale, (Mat4){2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1});
+}
+
+static void test_translation_matrix(void **state) {
+  //
+}
+
 /* Quaternion Tests
  * -----------------------------------------------------------------------------
  */
@@ -206,6 +267,8 @@ int main(void) {
       // Matrix
       cmocka_unit_test(test_identity_matrix),
       cmocka_unit_test(test_orthographic_matrix),
+      cmocka_unit_test(test_matrix_multiply),
+      cmocka_unit_test(test_scaling_matrix),
       // Quaternion
       cmocka_unit_test(test_quat_mult), cmocka_unit_test(test_quat_inverse),
       cmocka_unit_test(test_quat_rotation)};

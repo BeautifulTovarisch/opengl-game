@@ -6,7 +6,7 @@ void Game_Render(GLFWwindow *window) {
 
   glfwSwapBuffers(window);
 };
-void Game_Update(float dt){};
+void Game_Update(float dt, Game *game){};
 // Perform any cleanup necessary
 void Game_Terminate() { glfwTerminate(); };
 

@@ -6,60 +6,11 @@
 #include "game/mod.h"
 #include "linalg/mod.h"
 #include "logger/mod.h"
+#include "shader/mod.h"
 #include "texture/mod.h"
 
 #define WIDTH 800
 #define HEIGHT 600
-
-void init_buffers(GLuint *VBO, GLuint *VAO, GLuint *EBO,
-                  GLuint program_object) {
-  GLuint indices[6] = {0, 1, 2, 0, 2, 3};
-
-  GLfloat vertices[] = {// Position 0
-                        -0.5f, 0.5f, 0.0f,
-                        // Texture Coordinates 0
-                        0.0f, 0.0f,
-                        // Position 1
-                        -0.5f, -0.5f, 0.0f,
-                        // Texture Coordinates 1
-                        0.0f, 1.0f,
-                        // Position 2
-                        0.5f, -0.5f, 0.0f,
-                        // Texture Coordinates 2
-                        1.0f, 1.0f,
-                        // Position 3
-                        0.5f, 0.5f, 0.0f,
-                        // Texture Coordinates 3
-                        1.0f, 0.0f};
-
-  glGenVertexArrays(1, VAO);
-  glGenBuffers(1, VBO);
-  glGenBuffers(1, EBO);
-
-  glBindVertexArray(*VAO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, *VBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
-
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-               GL_STATIC_DRAW);
-
-  GLint pos_location = glGetAttribLocation(program_object, "a_pos");
-  GLint tex_location = glGetAttribLocation(program_object, "a_tex_coord");
-
-  // Stride length 5 here to capture position and texture coordinates
-  glVertexAttribPointer(pos_location, 3, GL_FLOAT, GL_FALSE,
-                        5 * sizeof(GLfloat), (void *)0);
-
-  glVertexAttribPointer(tex_location, 2, GL_FLOAT, GL_FALSE,
-                        5 * sizeof(GLfloat), (void *)(3 * sizeof(GLfloat)));
-
-  Logger_CheckGLErrors("Error assigning attribute pointers");
-
-  glEnableVertexAttribArray(pos_location);
-  glEnableVertexAttribArray(tex_location);
-}
 
 int main() {
   GLFWwindow *window = Engine_CreateWindow(WIDTH, HEIGHT);
@@ -73,12 +24,15 @@ int main() {
 
   float delta_time = 0.0f;
 
+  // TODO :: Consider placing inside Engine init function
+  GLuint program = glCreateProgram();
+
   while (!glfwWindowShouldClose(window)) {
 
     float frame_start = glfwGetTime();
 
     Game_ProcessInput(delta_time);
-    Game_Update(delta_time);
+    Game_Update(delta_time, game);
     Game_Render(window);
 
     delta_time = glfwGetTime() - frame_start;

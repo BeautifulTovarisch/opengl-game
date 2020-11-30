@@ -22,7 +22,7 @@ typedef struct Game {
 } Game;
 
 void Game_Render();
-void Game_Update(float dt);
+void Game_Update(float dt, Game *game);
 void Game_Terminate();
 void Game_ProcessInput(float dt);
 

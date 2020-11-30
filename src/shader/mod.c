@@ -38,7 +38,7 @@ const char *const *open_shader(const char *src) {
   return (const char *const *)buffer;
 }
 
-GLuint Shader_Compile(GLenum type, const char *file) {
+GLuint Shader_Compile(GLenum type, const char *file, GLuint prog) {
   GLuint shader = glCreateShader(type);
 
   const char *const *shader_src = open_shader(file);
@@ -66,17 +66,19 @@ GLuint Shader_Compile(GLenum type, const char *file) {
     return 0;
   }
 
+  glAttachShader(prog, shader);
+
   return shader;
 }
 
-int link_program(GLint gl_program) {
+int Shader_Link(GLint gl_program) {
   int linked;
 
   glLinkProgram(gl_program);
   glGetProgramiv(gl_program, GL_LINK_STATUS, &linked);
 
   if (!linked) {
-    Logger_GetLogInfo("[Error]::Shader", gl_program, 0);
+    Logger_GetLogInfo("Failure linking program", gl_program, 0);
     glDeleteProgram(gl_program);
 
     return 0;
@@ -84,24 +86,3 @@ int link_program(GLint gl_program) {
 
   return 1;
 }
-
-/* // Load and compile shaders, link program object */
-/* void Shader_Init() { */
-/*   GLuint geom_shader = compile_shader(GL_GEOMETRY_SHADER, geom_src); */
-/*   GLuint vertex_shader = compile_shader(GL_VERTEX_SHADER, vertex_src); */
-/*   GLuint fragment_shader = compile_shader(GL_FRAGMENT_SHADER, fragment_src);
- */
-
-/*   GLuint gl_program = glCreateProgram(); */
-
-/*   glAttachShader(gl_program, geom_shader); */
-/*   glAttachShader(gl_program, vertex_shader); */
-/*   glAttachShader(gl_program, fragment_shader); */
-
-/*   link_program(gl_program); */
-
-/*   // Shaders unecessary after linking */
-/*   glDeleteShader(geom_shader); */
-/*   glDeleteShader(vertex_shader); */
-/*   glDeleteShader(fragment_shader); */
-/* } */
