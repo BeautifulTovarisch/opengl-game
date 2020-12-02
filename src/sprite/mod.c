@@ -18,13 +18,17 @@ void Sprite_Init(GLuint VBO, GLuint VAO) {
 };
 
 void Sprite_Draw(GLuint texture, Vector pos, Vector size, Vector color,
-                 float rot, GLuint VAO) {
+                 float rot, GLuint VAO, GLuint prog) {
   Mat4 model = {};
   // Translate to Sprite position
   Matrix_Trans(pos, model);
   // Translate rotation to center of sprite (1/2 width,height);
   Matrix_Trans((Vector){.x = size.x / 2, .y = size.y / 2, .z = 0}, model);
   Matrix_Scale(size, model);
+
+  glUniformMatrix4fv(glGetUniformLocation(prog, "model"), 1, 0, model);
+  glUniform3f(glGetUniformLocation(prog, "sprite_color"), color.x, color.y,
+              color.z);
 
   glBindTexture(GL_TEXTURE_2D, texture);
 

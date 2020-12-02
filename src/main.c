@@ -6,7 +6,6 @@
 #include "game/mod.h"
 #include "linalg/mod.h"
 #include "logger/mod.h"
-#include "shader/mod.h"
 #include "texture/mod.h"
 
 #define WIDTH 800
@@ -24,8 +23,12 @@ int main() {
 
   float delta_time = 0.0f;
 
-  // TODO :: Consider placing inside Engine init function
   GLuint program = glCreateProgram();
+
+  if (!Engine_Init(program, WIDTH, HEIGHT)) {
+    Log(FATAL, "Engine failed to initialize");
+    return 1;
+  };
 
   while (!glfwWindowShouldClose(window)) {
 

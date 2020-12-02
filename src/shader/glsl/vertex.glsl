@@ -8,7 +8,6 @@ uniform mat4 projection;
 
 void main()
 {
-  tex_coord  vertex.zw;
-  rotation = rotation + vertex.xy;
+  tex_coord = vertex.zw;
   gl_Position = projection * vec4(rotation, 1.0);
 }

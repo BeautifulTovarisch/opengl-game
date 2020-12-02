@@ -6,8 +6,7 @@
 #include "../linalg/mod.h"
 
 void Sprite_Init(GLuint VBO, GLuint VAO);
-
 void Sprite_Draw(GLuint texture, Vector pos, Vector size, Vector color,
-                 float rot, GLuint VAO);
+                 float rot, GLuint VAO, GLuint prog);
 
 #endif

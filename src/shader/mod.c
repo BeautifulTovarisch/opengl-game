@@ -44,6 +44,7 @@ GLuint Shader_Compile(GLenum type, const char *file, GLuint prog) {
   const char *const *shader_src = open_shader(file);
 
   if (shader_src == NULL) {
+
     char msg[256] = {0};
     snprintf(msg, sizeof(msg), "Unable to read shader source %s", file);
 
@@ -61,7 +62,10 @@ GLuint Shader_Compile(GLenum type, const char *file, GLuint prog) {
   glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
 
   if (!compiled) {
-    Logger_GetLogInfo("Failure compiling shader", shader, 1);
+    char msg[256] = {0};
+    snprintf(msg, 256, "Failure compiling shader %s", file);
+
+    Logger_GetLogInfo(msg, shader, 1);
     glDeleteShader(shader);
     return 0;
   }
@@ -85,4 +89,12 @@ int Shader_Link(GLint gl_program) {
   }
 
   return 1;
+}
+
+void Shader_SetInteger(int i, GLuint prog, const char *name) {
+  glUniform1i(glGetUniformLocation(prog, name), i);
+};
+
+void Shader_SetMatrix4(Mat4 mat, GLuint prog, const char *name) {
+  glUniformMatrix4fv(glGetUniformLocation(prog, name), 1, 0, mat);
 }

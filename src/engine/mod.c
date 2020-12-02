@@ -44,3 +44,27 @@ GLFWwindow *Engine_CreateWindow(int width, int height) {
 
   return window;
 }
+
+GLint Engine_Init(GLuint prog, int width, int height) {
+  GLuint vertex =
+      Shader_Compile(GL_VERTEX_SHADER, "src/shader/glsl/vertex.glsl", prog);
+
+  GLuint fragment =
+      Shader_Compile(GL_FRAGMENT_SHADER, "src/shader/glsl/fragment.glsl", prog);
+
+  if (!Shader_Link(prog)) {
+    return -1;
+  }
+
+  Mat4 projection = {0};
+  Matrix_Ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f,
+               projection);
+
+  Shader_SetInteger(0, prog, "image");
+  Shader_SetMatrix4(projection, prog, "projection");
+
+  GLuint VBO, VAO;
+  Sprite_Init(VBO, VAO);
+
+  return 1;
+}
