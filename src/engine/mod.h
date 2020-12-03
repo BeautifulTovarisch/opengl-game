@@ -11,11 +11,8 @@
 #include "../shader/mod.h"
 #include "../sprite/mod.h"
 
-void process_input(GLFWwindow *window);
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-
 GLFWwindow *Engine_CreateWindow(int width, int height);
 
-GLint Engine_Init(GLuint prog, int width, int height);
+GLuint Engine_Init(int width, int height);
 
 #endif

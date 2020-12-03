@@ -38,7 +38,7 @@ const char *const *open_shader(const char *src) {
   return (const char *const *)buffer;
 }
 
-GLuint Shader_Compile(GLenum type, const char *file, GLuint prog) {
+GLuint Shader_Compile(GLenum type, const char *file) {
   GLuint shader = glCreateShader(type);
 
   const char *const *shader_src = open_shader(file);
@@ -70,8 +70,6 @@ GLuint Shader_Compile(GLenum type, const char *file, GLuint prog) {
     return 0;
   }
 
-  glAttachShader(prog, shader);
-
   return shader;
 }
 
@@ -91,10 +89,10 @@ int Shader_Link(GLint gl_program) {
   return 1;
 }
 
-void Shader_SetInteger(int i, GLuint prog, const char *name) {
+void Shader_SetInteger(GLuint prog, const char *name, int i) {
   glUniform1i(glGetUniformLocation(prog, name), i);
 };
 
-void Shader_SetMatrix4(Mat4 mat, GLuint prog, const char *name) {
+void Shader_SetMatrix4(GLuint prog, const char *name, Mat4 mat) {
   glUniformMatrix4fv(glGetUniformLocation(prog, name), 1, 0, mat);
 }

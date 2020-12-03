@@ -23,9 +23,9 @@ int main() {
 
   float delta_time = 0.0f;
 
-  GLuint program = glCreateProgram();
+  GLuint program = Engine_Init(WIDTH, HEIGHT);
 
-  if (!Engine_Init(program, WIDTH, HEIGHT)) {
+  if (!program) {
     Log(FATAL, "Engine failed to initialize");
     return 1;
   };

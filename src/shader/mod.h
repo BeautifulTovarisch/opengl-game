@@ -10,9 +10,9 @@
 #include "../logger/mod.h"
 
 int Shader_Link(GLint gl_program);
-GLuint Shader_Compile(GLenum type, const char *file, GLuint prog);
+GLuint Shader_Compile(GLenum type, const char *file);
 
-void Shader_SetInteger(int i, GLuint prog, const char *name);
-void Shader_SetMatrix4(Mat4 mat, GLuint prog, const char *name);
+void Shader_SetInteger(GLuint prog, const char *name, int i);
+void Shader_SetMatrix4(GLuint prog, const char *name, Mat4 mat);
 
 #endif
