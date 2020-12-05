@@ -9,7 +9,6 @@
 #include "../linalg/mod.h"
 #include "../logger/mod.h"
 #include "../shader/mod.h"
-#include "../sprite/mod.h"
 
 GLFWwindow *Engine_CreateWindow(int width, int height);
 

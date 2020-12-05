@@ -4,7 +4,6 @@ void Game_Render(GLFWwindow *window) {
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  glfwSwapBuffers(window);
 };
 void Game_Update(float dt, Game *game){};
 // Perform any cleanup necessary

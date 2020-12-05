@@ -6,8 +6,7 @@ out vec4 frag_color;
 uniform vec3 sprite_color;
 uniform sampler2D image;
 
-
 void main()
 {
-	frag_color = vec4(sprite_color, 1.0) * texture(image, tex_coord);
+  frag_color = texture(image, tex_coord);
 }

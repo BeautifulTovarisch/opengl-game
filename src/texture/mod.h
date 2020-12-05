@@ -7,10 +7,6 @@
 
 #include "../logger/mod.h"
 
-void Texture_Cleanup(char *data);
-
-char *Texture_Load(const char *filepath, int *width, int *height);
-
-GLuint Texture_Create2D(unsigned int width, unsigned int height, char *data);
+GLuint Texture_Create2D(const char *file);
 
 #endif

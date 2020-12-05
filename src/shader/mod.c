@@ -91,8 +91,16 @@ int Shader_Link(GLint gl_program) {
 
 void Shader_SetInteger(GLuint prog, const char *name, int i) {
   glUniform1i(glGetUniformLocation(prog, name), i);
-};
+}
 
 void Shader_SetMatrix4(GLuint prog, const char *name, Mat4 mat) {
   glUniformMatrix4fv(glGetUniformLocation(prog, name), 1, 0, mat);
+}
+
+void Shader_SetVector3(GLuint prog, const char *name, Vector v) {
+  glUniform3f(glGetUniformLocation(prog, name), v.x, v.y, v.z);
+}
+
+void Shader_SetVector4(GLuint prog, const char *name, Vector v) {
+  glUniform4f(glGetUniformLocation(prog, name), v.x, v.y, v.z, v.w);
 }

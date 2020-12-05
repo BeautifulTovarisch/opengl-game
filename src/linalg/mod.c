@@ -84,7 +84,6 @@ Vector Vector_Sub(Vector a, Vector b) {
   return array_to_vec(v2);
 }
 
-// TODO :: Consider whether to use complex or real dot product
 float Vector_Dot(Vector a, Vector b) {
   float v1[] = {a.x, a.y, a.z};
   float v2[] = {b.x, b.y, b.z};
@@ -152,9 +151,6 @@ void Matrix_Ortho(float left, float right, float bottom, float top, float near,
   mat[15] = 1.0f;
 }
 
-// TODO :: Consider whether updating matrix directly rather than
-// multiplying to combine transformations is viable
-
 void Matrix_Mult(Mat4 m1, Mat4 m2) {
   Mat4 result = {0};
 
@@ -183,7 +179,6 @@ void Matrix_Trans(Vector v, Mat4 mat) {
 void Matrix_Scale(Vector v, Mat4 mat) {
   Mat4 scale = {0};
 
-  // Construct a translation matrix
   scale[0] = v.x;
   scale[5] = v.y;
   scale[10] = v.z;

@@ -64,15 +64,19 @@ GLuint Engine_Init(int width, int height) {
   glDeleteShader(vertex);
   glDeleteShader(fragment);
 
+  // Projection set here due to fixed 2D nature of game.
   Mat4 projection = {0};
-  Matrix_Ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f,
-               projection);
+  Matrix_Ident(projection);
 
-  Shader_SetInteger(prog, "image", 0);
-  Shader_SetMatrix4(prog, "projection", projection);
+  /* Matrix_Ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f, */
+  /*              projection); */
 
-  GLuint VBO, VAO;
-  Sprite_Init(VBO, VAO);
+  /* glUseProgram(prog); */
+
+  /* Shader_SetInteger(prog, "image", 0); */
+  /* Shader_SetMatrix4(prog, "projection", projection); */
+
+  Logger_CheckGLErrors("Failed to set shader input.");
 
   return prog;
 }

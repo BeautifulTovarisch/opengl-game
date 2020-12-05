@@ -14,5 +14,7 @@ GLuint Shader_Compile(GLenum type, const char *file);
 
 void Shader_SetInteger(GLuint prog, const char *name, int i);
 void Shader_SetMatrix4(GLuint prog, const char *name, Mat4 mat);
+void Shader_SetVector3(GLuint prog, const char *name, Vector v);
+void Shader_SetVector4(GLuint prog, const char *name, Vector v);
 
 #endif
