@@ -57,14 +57,14 @@ static void test_to_radians(void **state) {
 
 static void test_to_quat(void **state) {
   // No Rotation
-  vector_equal(To_Quat((Vector){0, 0, 0}), (Vector){0, 0, 0, 1});
+  vector_equal(To_Quat((Vector){0, 0, 0}, 0), (Vector){0, 0, 0, 1});
 
   // 90 deg x
-  vector_equal(To_Quat((Vector){PI / 2, 0, 0}),
+  vector_equal(To_Quat((Vector){1, 0, 0}, PI / 2),
                (Vector){0.707107f, 0, 0, 0.707107f});
 
   // 45 deg z
-  vector_equal(To_Quat((Vector){PI / 4, 0, 0}),
+  vector_equal(To_Quat((Vector){1, 0, 0}, PI / 4),
                (Vector){0.382683f, 0, 0, 0.923880f});
 }
 

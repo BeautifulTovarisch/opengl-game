@@ -35,23 +35,14 @@ void print_matrix(Mat4 mat) {
  */
 float To_Rad(float deg) { return deg * ((float)M_PI / 180); }
 
-/* Vector -> Quaternion conversion
- * NOTE :: Rotation vector must be in radians.
+/* Axis Angle -> Quaternion conversion
+ * NOTE :: angle (Θ) must be in radians
  */
-Vector To_Quat(Vector v) {
-  float cosy = cos(v.z * 0.5f);
-  float siny = sin(v.z * 0.5f);
-
-  float cosp = cos(v.y * 0.5f);
-  float sinp = sin(v.y * 0.5f);
-
-  float cosr = cos(v.x * 0.5f);
-  float sinr = sin(v.x * 0.5f);
-
-  return (Vector){.x = sinr * cosp * cosy - cosr * sinp * siny,
-                  .y = cosr * sinp * cosy + sinr * cosp * siny,
-                  .z = cosr * cosp * siny - sinr * sinp * cosy,
-                  .w = cosr * cosp * cosy + sinr * sinp * siny};
+Vector To_Quat(Vector v, float angle) {
+  return (Vector){.x = v.x * sin(angle * 0.5f),
+                  .y = v.y * sin(angle * 0.5f),
+                  .z = v.z * sin(angle * 0.5f),
+                  .w = cos(angle * 0.5f)};
 }
 
 /* Vectors

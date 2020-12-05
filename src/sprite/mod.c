@@ -36,7 +36,7 @@ GLuint Sprite_Init(GLuint prog) {
  * |x y 0 0| Position
  * |w h 0 0| Size
  * |r g b 0| Color
- * |θ θ θ 0| Rotation (in radians)
+ * |1 1 1 Θ| Axis Angle Rotation (in radians)
  */
 void Sprite_Draw(GLuint texture, GLuint VAO, GLuint prog, Mat4 poscr) {
 
@@ -47,13 +47,15 @@ void Sprite_Draw(GLuint texture, GLuint VAO, GLuint prog, Mat4 poscr) {
   Vector pos = {poscr[0], poscr[1], poscr[2]};
   Vector size = {poscr[4], poscr[5], poscr[6]};
   Vector color = {poscr[8], poscr[9], poscr[10]};
-  Vector rotation = {poscr[12], poscr[13], poscr[14]};
+  Vector axis = {poscr[12], poscr[13], poscr[14]};
+
+  float angle = poscr[15];
 
   // Translate to Sprite position
   Matrix_Trans(pos, model);
   Matrix_Scale(size, model);
 
-  Vector v = Quat_Rot(To_Quat(rotation), pos);
+  Vector v = Quat_Rot(To_Quat(axis, angle), pos);
 
   Shader_SetMatrix4(prog, "model", model);
   Shader_SetVector3(prog, "rotation", v);

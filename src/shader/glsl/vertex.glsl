@@ -10,6 +10,5 @@ uniform mat4 projection;
 void main()
 {
   tex_coord = vec2(vertex.z, vertex.w);
-  vec3 pos = rotation + vec3(vertex.xy, 0);
   gl_Position = vec4(vertex.xy, 0, 1.0) * model * projection;
 }

@@ -30,7 +30,7 @@ typedef struct Vector {
 typedef float Mat4[ROWS * COLS];
 
 float To_Rad(float deg);
-Vector To_Quat(Vector v);
+Vector To_Quat(Vector v, float angle);
 
 Vector Vector_Add(Vector v1, Vector v2);
 Vector Vector_Sub(Vector v1, Vector v2);

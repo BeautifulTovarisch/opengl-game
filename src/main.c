@@ -33,8 +33,8 @@ int main() {
 
   GLuint VAO = Sprite_Init(program);
 
-  Mat4 sprite_attr = {200, 200,  0, 0, 300.0f, 400.0f, 0,          0,
-                      0,   1.0f, 0, 0, 0,      0,      To_Rad(45), 0};
+  Mat4 sprite_attr = {200, 200,  0, 0, 300.0f, 400.0f, 0, 0,
+                      0,   1.0f, 0, 0, 0,      0,      1, To_Rad(45)};
 
   GLuint texture = Texture_Create2D("assets/smiley.png");
 
