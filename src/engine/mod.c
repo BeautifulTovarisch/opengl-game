@@ -66,15 +66,13 @@ GLuint Engine_Init(int width, int height) {
 
   // Projection set here due to fixed 2D nature of game.
   Mat4 projection = {0};
-  Matrix_Ident(projection);
+  Matrix_Ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f,
+               projection);
 
-  /* Matrix_Ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f, */
-  /*              projection); */
+  glUseProgram(prog);
 
-  /* glUseProgram(prog); */
-
-  /* Shader_SetInteger(prog, "image", 0); */
-  /* Shader_SetMatrix4(prog, "projection", projection); */
+  Shader_SetInteger(prog, "image", 0);
+  Shader_SetMatrix4(prog, "projection", projection);
 
   Logger_CheckGLErrors("Failed to set shader input.");
 

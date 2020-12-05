@@ -9,8 +9,8 @@
 #include "sprite/mod.h"
 #include "texture/mod.h"
 
-#define WIDTH 1024
-#define HEIGHT 720
+#define WIDTH 800
+#define HEIGHT 600
 
 int main() {
   GLFWwindow *window = Engine_CreateWindow(WIDTH, HEIGHT);
@@ -33,10 +33,10 @@ int main() {
 
   GLuint VAO = Sprite_Init(program);
 
-  Mat4 sprite_attr = {200.0f, 200.0f, 0, 0, 300.0f, 400.0f, 0, 0,
-                      0,      1.0f,   0, 0, 0,      0,      0, 0};
+  Mat4 sprite_attr = {200, 200,  0, 0, 300.0f, 400.0f, 0,          0,
+                      0,   1.0f, 0, 0, 0,      0,      To_Rad(45), 0};
 
-  GLuint texture = Texture_Create2D("assets/lenna.png");
+  GLuint texture = Texture_Create2D("assets/smiley.png");
 
   while (!glfwWindowShouldClose(window)) {
 
@@ -47,13 +47,10 @@ int main() {
     Game_Update(delta_time, game);
     Game_Render(window);
 
-    glUseProgram(program);
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    Sprite_Draw(texture, VAO, program, sprite_attr);
 
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glfwSwapBuffers(window);
-    glfwPollEvents();
-    /* Sprite_Draw(texture, VAO, program, sprite_attr); */
 
     delta_time = glfwGetTime() - frame_start;
   }

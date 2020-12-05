@@ -143,11 +143,11 @@ void Matrix_Ortho(float left, float right, float bottom, float top, float near,
   zero_array(mat);
 
   mat[0] = 2.0f / (right - left);
+  mat[3] = -(right + left) / (right - left);
   mat[5] = 2.0f / (top - bottom);
+  mat[7] = -(top + bottom) / (top - bottom);
   mat[10] = -2.0f / (far - near);
-  mat[12] = -(right + left) / (right - left);
-  mat[13] = -(top + bottom) / (top - bottom);
-  mat[14] = -(far + near) / (far - near);
+  mat[11] = -(far + near) / (far - near);
   mat[15] = 1.0f;
 }
 

@@ -150,12 +150,12 @@ static void test_vector_cross(void **state) {
  */
 
 /* Identity Matrix
- * ---------
+ *
  * |1 0 0 0|
  * |0 1 0 0|
  * |0 0 1 0|
  * |0 0 0 1|
- * ---------
+ *
  */
 static void test_identity_matrix(void **state) {
   Mat4 result;
@@ -166,17 +166,19 @@ static void test_identity_matrix(void **state) {
   array_equal(expected, result);
 }
 
-/* ------------
- * | 2  0  0 0|
- * | 0  2  0 0|
- * | 0  0 -2 0|
- * |-1 -1 -1 1|
- * ------------
+/* Othographic Matrix
+ *
+ * |2  0  0 -1|
+ * |0  2  0 -1|
+ * |0  0 -2 -1|
+ * |0  0  0  1|
+ *
  */
 static void test_orthographic_matrix(void **state) {
   Mat4 result;
-  Mat4 expected = {2, 0, 0, 0, 0, 2, 0, 0, 0, 0, -2, 0, -1, -1, -1, 1};
+  Mat4 expected = {2, 0, 0, -1, 0, 2, 0, -1, 0, 0, -2, -1, 0, 0, 0, 1};
 
+  // Left, right, bottom, top, near, far
   Matrix_Ortho(0, 1, 0, 1, 0, 1, result);
 
   array_equal(expected, result);

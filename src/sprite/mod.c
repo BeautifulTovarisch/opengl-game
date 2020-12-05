@@ -3,23 +3,10 @@
 GLuint Sprite_Init(GLuint prog) {
   unsigned int VAO, VBO, EBO;
 
-  GLuint indices[6] = {0, 1, 2, 0, 2, 3};
-  GLfloat vertices[] = {// Position 0
-                        -0.5f, 0.5f,
-                        // Texture Coordinates 0
-                        0.0f, 0.0f,
-                        // Position 1
-                        -0.5f, -0.5f,
-                        // Texture Coordinates 1
-                        0.0f, 1.0f,
-                        // Position 2
-                        0.5f, -0.5f,
-                        // Texture Coordinates 2
-                        1.0f, 1.0f,
-                        // Position 3
-                        0.5f, 0.5f,
-                        // Texture Coordinates 3
-                        1.0f, 0.0f};
+  GLuint indices[6] = {0, 1, 2, 0, 1, 3};
+
+  GLfloat vertices[] = {0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+                        0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
@@ -63,16 +50,15 @@ void Sprite_Draw(GLuint texture, GLuint VAO, GLuint prog, Mat4 poscr) {
   Vector rotation = {poscr[12], poscr[13], poscr[14]};
 
   // Translate to Sprite position
-  /* Matrix_Trans(pos, model); */
-  /* Matrix_Scale(size, model); */
+  Matrix_Trans(pos, model);
+  Matrix_Scale(size, model);
 
   Vector v = Quat_Rot(To_Quat(rotation), pos);
 
-  /* Shader_SetMatrix4(prog, "model", model); */
-  /* Shader_SetVector3(prog, "rotation", rotation); */
-  /* Shader_SetVector3(prog, "sprite_color", color); */
+  Shader_SetMatrix4(prog, "model", model);
+  Shader_SetVector3(prog, "rotation", v);
+  Shader_SetVector3(prog, "sprite_color", color);
 
+  glUseProgram(prog);
   glBindVertexArray(VAO);
-  glDrawArrays(GL_TRIANGLES, 0, 6);
-  glBindVertexArray(0);
 }
