@@ -24,7 +24,7 @@ $(TESTDIR):
 
 .PHONY: test clean $(SUBDIRS) $(TESTDIR)
 clean:
-	rm -f src/main src/main.o
+	rm -f main src/main.o
 
 # Recurse into each subdir and execute make clean
 	for dir in $(SUBDIRS); do \
