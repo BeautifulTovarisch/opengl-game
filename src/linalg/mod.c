@@ -183,6 +183,8 @@ void Matrix_Scale(Vector v, Mat4 mat) {
 /* Quaternions
  * -----------------------------------------------------------------------------
  */
+
+// TODO :: Examine correctness of algorithm
 Vector Quat_Rot(Vector q, Vector v) {
   Vector v1 = Vector_Scale(q, 2.0f * Vector_Dot(q, v));
   Vector v2 = Vector_Scale(v, q.w * q.w - Vector_Dot(q, q));

@@ -53,7 +53,7 @@ void Sprite_Draw(GLuint texture, GLuint VAO, GLuint prog, Mat4 poscr) {
   float angle = poscr[15];
 
   // Translate to Sprite position
-  /* Matrix_Trans(pos, model); */
+  Matrix_Trans(pos, model);
   Matrix_Scale(size, model);
 
   Vector v = To_Quat(axis, angle);
