@@ -31,12 +31,13 @@ GLuint Sprite_Init(GLuint prog) {
 };
 
 /* Draw sprite given various vectors and a texture.
- * Poscr -> POsition, Size, Color, Rotation combined in one matrix:
+ * poscr -> POsition, Size, Color, Rotation combined in one matrix:
  *
  * |x y 0 0| Position
  * |w h 0 0| Size
  * |r g b 0| Color
  * |1 1 1 Θ| Axis Angle Rotation (in radians)
+ *
  */
 void Sprite_Draw(GLuint texture, GLuint VAO, GLuint prog, Mat4 poscr) {
 
@@ -52,13 +53,13 @@ void Sprite_Draw(GLuint texture, GLuint VAO, GLuint prog, Mat4 poscr) {
   float angle = poscr[15];
 
   // Translate to Sprite position
-  Matrix_Trans(pos, model);
+  /* Matrix_Trans(pos, model); */
   Matrix_Scale(size, model);
 
-  Vector v = Quat_Rot(To_Quat(axis, angle), pos);
+  Vector v = To_Quat(axis, angle);
 
   Shader_SetMatrix4(prog, "model", model);
-  Shader_SetVector3(prog, "rotation", v);
+  Shader_SetVector4(prog, "rotation", v);
   Shader_SetVector3(prog, "sprite_color", color);
 
   glUseProgram(prog);

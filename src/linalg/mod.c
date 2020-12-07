@@ -191,11 +191,11 @@ Vector Quat_Rot(Vector q, Vector v) {
   return Vector_Add(Vector_Add(v1, v2), v3);
 }
 
-Vector Quat_Mult(Vector a, Vector b) {
-  return (Vector){.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
-                  .y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
-                  .z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
-                  .w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z};
+Vector Quat_Mult(Vector q1, Vector q2) {
+  return (Vector){.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
+                  .y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x,
+                  .z = q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w,
+                  .w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z};
 }
 
 Vector Quat_Inverse(Vector q) {
