@@ -50,6 +50,7 @@ void Matrix_Scale(Vector v, Mat4 mat);
 
 Vector Quat_Rot(Vector q, Vector v);
 Vector Quat_Mult(Vector a, Vector b);
+Vector Quat_Norm(Vector q);
 Vector Quat_Inverse(Vector a);
 
 #endif

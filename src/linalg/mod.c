@@ -185,19 +185,32 @@ void Matrix_Scale(Vector v, Mat4 mat) {
  */
 
 // TODO :: Examine correctness of algorithm
-Vector Quat_Rot(Vector q, Vector v) {
-  Vector v1 = Vector_Scale(q, 2.0f * Vector_Dot(q, v));
-  Vector v2 = Vector_Scale(v, q.w * q.w - Vector_Dot(q, q));
-  Vector v3 = Vector_Scale(Vector_Cross(q, v), 2.0f * q.w);
+/* Vector Quat_Rot(Vector q, Vector pos) { */
+/*   Vector v1 = Vector_Scale(q, 2.0f * Vector_Dot(q, v)); */
+/*   Vector v2 = Vector_Scale(v, q.w * q.w - Vector_Dot(q, q)); */
+/*   Vector v3 = Vector_Scale(Vector_Cross(q, v), 2.0f * q.w); */
 
-  return Vector_Add(Vector_Add(v1, v2), v3);
-}
+/*   return Vector_Add(Vector_Add(v1, v2), v3); */
+/* } */
 
 Vector Quat_Mult(Vector q1, Vector q2) {
   return (Vector){.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
                   .y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x,
                   .z = q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w,
                   .w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z};
+}
+
+Vector Quat_Norm(Vector q) {
+  float vec[] = {q.x, q.y, q.z, q.w};
+  const float mag = cblas_snrm2(4, vec, 1);
+
+  if (mag > 0) {
+    cblas_sscal(4, 1 / mag, vec, 1);
+
+    return array_to_vec(vec);
+  }
+
+  return (Vector){0};
 }
 
 Vector Quat_Inverse(Vector q) {

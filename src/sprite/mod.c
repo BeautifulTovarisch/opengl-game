@@ -56,10 +56,10 @@ void Sprite_Draw(GLuint texture, GLuint VAO, GLuint prog, Mat4 poscr) {
   Matrix_Trans(pos, model);
   Matrix_Scale(size, model);
 
-  Vector v = To_Quat(axis, angle);
+  Vector q = To_Quat(axis, angle);
 
   Shader_SetMatrix4(prog, "model", model);
-  Shader_SetVector4(prog, "rotation", v);
+  Shader_SetVector4(prog, "rotation", q);
   Shader_SetVector3(prog, "sprite_color", color);
 
   glUseProgram(prog);
