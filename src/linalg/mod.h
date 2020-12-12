@@ -44,7 +44,6 @@ Vector V_Scale(Vector v, float scalar);
 Vector V_Cross(Vector v1, Vector v2);
 
 float V_Dot(Vector v1, Vector v2);
-float V_Mag(Vector v);
 
 void M_Ident(Mat4 mat);
 void M_Ortho(float left, float right, float bottom, float top, float near,
@@ -63,5 +62,7 @@ float Q_Dot(Vector q1, Vector q2);
 float Q_Mag(Vector q);
 
 DualQuat DQ_Create(Vector r, Vector t);
+DualQuat DQ_Scale(DualQuat dq, float scl);
+DualQuat DQ_Norm(DualQuat dq);
 
 #endif

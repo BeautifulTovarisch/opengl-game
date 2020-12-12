@@ -31,6 +31,13 @@ void print_matrix(Mat4 mat) {
   printf("\n");
 }
 
+float vector_mag(Vector v, float len) {
+  float vec[] = {v.x, v.y, v.z, v.w};
+
+  // len determines how many components are included (e.g 3 -> xyz ignoring w)
+  return cblas_snrm2(len, vec, 1);
+}
+
 /* Utilities
  * -----------------------------------------------------------------------------
  */
@@ -83,15 +90,9 @@ float V_Dot(Vector a, Vector b) {
   return cblas_sdot(3, v1, 1, v2, 1);
 };
 
-float V_Mag(Vector v) {
-  float vec[] = {v.x, v.y, v.z};
-
-  return cblas_snrm2(3, vec, 1);
-}
-
 Vector V_Norm(Vector v) {
   // Divide by magnitude
-  return V_Scale(v, 1.0 / V_Mag(v));
+  return V_Scale(v, 1.0 / vector_mag(v, 3));
 };
 
 Vector V_Cross(Vector a, Vector b) {
@@ -231,7 +232,6 @@ Vector Q_Inverse(Vector q) {
                   .w = q.w * scalar};
 }
 
-// TODO :: Test
 float Q_Dot(Vector q1, Vector q2) {
   float v1[] = {q1.x, q1.y, q1.z, q1.w};
   float v2[] = {q2.x, q2.y, q2.z, q2.w};
@@ -239,18 +239,10 @@ float Q_Dot(Vector q1, Vector q2) {
   return cblas_sdot(4, v1, 1, v2, 1);
 }
 
-// TODO :: Test
-float Q_Mag(Vector q) {
-  float vec[] = {q.x, q.y, q.z, q.w};
-
-  return cblas_snrm2(4, vec, 1);
-}
-
 /* Dual Quaternions
  * -----------------------------------------------------------------------------
  */
 
-// TODO :: Test
 DualQuat DQ_Create(Vector r, Vector t) {
   Vector real = Q_Norm(r);
 
@@ -262,4 +254,9 @@ DualQuat DQ_Scale(DualQuat dq, float scl) {
                     .dual = Q_Scale(dq.dual, scl)};
 }
 
-DualQuat DQ_Norm(DualQuat dq) { const float scl = 1.0f / Q_Mag(dq.real); }
+DualQuat DQ_Norm(DualQuat dq) {
+  const float scl = 1.0f / vector_mag(dq.real, 4);
+
+  return (DualQuat){.real = Q_Scale(dq.real, scl),
+                    .dual = Q_Scale(dq.dual, scl)};
+}

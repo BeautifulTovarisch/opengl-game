@@ -8,6 +8,8 @@
 
 #define PI 3.14159265358979323846
 
+// TODO :: Cleanup and write more thorough tests
+
 // Mocks
 void Log(Level level, char const *message) {}
 
@@ -114,10 +116,6 @@ static void test_vector_multiply(void **state) {
 
   assert_float_equal(result.x, 2.0, 0);
   assert_float_equal(result.y, 2.0, 0);
-}
-
-static void test_vector_magnitude(void **state) {
-  assert_float_equal(V_Mag((Vector){3, 4}), 5.0, 0);
 }
 
 static void test_vector_normalize(void **state) {
@@ -253,6 +251,10 @@ static void test_quat_mult(void **state) {
                (Vector){0.270598f, 0.653281f, 0.270598f, 0.653281});
 }
 
+static void test_quat_norm(void **state) {
+  vector_equal(Q_Norm((Vector){3, 0, 0, 4}), (Vector){0.6f, 0, 0, 0.8f});
+}
+
 static void test_quat_inverse(void **state) {
   vector_equal(Q_Inverse((Vector){0, 1, 0, 1}), (Vector){0, -0.5f, 0, 0.5f});
 }
@@ -263,7 +265,38 @@ static void test_quat_scale(void **state) {
 
 // 1*1 + 2*1 + 2*1 + 1*1
 static void test_quat_dot(void **state) {
-  assert_float_equal(Q_Dot((Vector){1, 2, 2, 1}, (Vector){1, 1, 1, 1}), 6.0f, 0);
+  assert_float_equal(Q_Dot((Vector){1, 2, 2, 1}, (Vector){1, 1, 1, 1}), 6.0f,
+                     0);
+}
+
+/* Dual Quaternion Tests
+ * -----------------------------------------------------------------------------
+ */
+
+static void test_dual_quat_create(void **state) {
+  DualQuat dq =
+      DQ_Create((Vector){0.707107f, 0, 0, 0.707107f}, (Vector){0, 20, 0, 0});
+
+  vector_equal(dq.real, (Vector){0.707107f, 0, 0, 0.707107f});
+  vector_equal(dq.dual, (Vector){0, 7.071068f, -7.071068f, 0});
+}
+
+static void test_dual_quat_scale(void **state) {
+  DualQuat dq = {.real = {1, 1, 2, 1}, .dual = {2, 2, 3, 4}};
+
+  DualQuat scaled = DQ_Scale(dq, 2.0f);
+
+  vector_equal(scaled.real, (Vector){2, 2, 4, 2});
+  vector_equal(scaled.dual, (Vector){4, 4, 6, 8});
+}
+
+static void test_dual_quat_norm(void **state) {
+  DualQuat dq = {.real = {1, 1, 1, 1}, .dual = {4, 1, 6, 8}};
+
+  DualQuat result = DQ_Norm(dq);
+
+  vector_equal(result.real, (Vector){0.5f, 0.5f, 0.5f, 0.5f});
+  vector_equal(result.dual, (Vector){2, 0.5f, 3, 4});
 }
 
 int main(void) {
@@ -274,7 +307,6 @@ int main(void) {
       cmocka_unit_test(test_vector_add), cmocka_unit_test(test_vector_divide),
       cmocka_unit_test(test_vector_multiply),
       cmocka_unit_test(test_vector_subtract), cmocka_unit_test(test_vector_dot),
-      cmocka_unit_test(test_vector_magnitude),
       cmocka_unit_test(test_vector_normalize),
       cmocka_unit_test(test_vector_cross),
       // Matrix
@@ -285,7 +317,12 @@ int main(void) {
       cmocka_unit_test(test_translation_matrix),
       // Quaternion
       cmocka_unit_test(test_quat_mult), cmocka_unit_test(test_quat_inverse),
-      cmocka_unit_test(test_quat_scale), cmocka_unit_test(test_quat_dot)};
+      cmocka_unit_test(test_quat_scale), cmocka_unit_test(test_quat_dot),
+      cmocka_unit_test(test_quat_norm),
+      // Dual Quaternion
+      cmocka_unit_test(test_dual_quat_create),
+      cmocka_unit_test(test_dual_quat_scale),
+      cmocka_unit_test(test_dual_quat_norm)};
 
   return cmocka_run_group_tests(tests, NULL, NULL);
 }
