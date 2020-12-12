@@ -18,6 +18,11 @@ typedef struct Vector {
   float w;
 } Vector;
 
+typedef struct DualQuat {
+  Vector real;
+  Vector dual;
+} DualQuat;
+
 /* NOTE :: Using row-order index of 1d array
  * mat[row][col] = mat[COLS * row + col]
  *
@@ -32,25 +37,31 @@ typedef float Mat4[ROWS * COLS];
 float To_Rad(float deg);
 Vector To_Quat(Vector v, float angle);
 
-Vector Vector_Add(Vector v1, Vector v2);
-Vector Vector_Sub(Vector v1, Vector v2);
-Vector Vector_Norm(Vector v);
-Vector Vector_Scale(Vector v, float scalar);
-Vector Vector_Cross(Vector v1, Vector v2);
+Vector V_Add(Vector v1, Vector v2);
+Vector V_Sub(Vector v1, Vector v2);
+Vector V_Norm(Vector v);
+Vector V_Scale(Vector v, float scalar);
+Vector V_Cross(Vector v1, Vector v2);
 
-float Vector_Dot(Vector v1, Vector v2);
-float Vector_Mag(Vector v);
+float V_Dot(Vector v1, Vector v2);
+float V_Mag(Vector v);
 
-void Matrix_Ident(Mat4 mat);
-void Matrix_Ortho(float left, float right, float bottom, float top, float near,
-                  float far, Mat4 mat);
-void Matrix_Mult(Mat4 m1, Mat4 out);
-void Matrix_Trans(Vector v, Mat4 mat);
-void Matrix_Scale(Vector v, Mat4 mat);
+void M_Ident(Mat4 mat);
+void M_Ortho(float left, float right, float bottom, float top, float near,
+             float far, Mat4 mat);
+void M_Mult(Mat4 m1, Mat4 out);
+void M_Trans(Vector v, Mat4 mat);
+void M_Scale(Vector v, Mat4 mat);
 
-Vector Quat_Rot(Vector q, Vector v);
-Vector Quat_Mult(Vector a, Vector b);
-Vector Quat_Norm(Vector q);
-Vector Quat_Inverse(Vector a);
+Vector Q_Rot(Vector q, Vector v);
+Vector Q_Mult(Vector a, Vector b);
+Vector Q_Norm(Vector q);
+Vector Q_Scale(Vector q, float scl);
+Vector Q_Inverse(Vector a);
+
+float Q_Dot(Vector q1, Vector q2);
+float Q_Mag(Vector q);
+
+DualQuat DQ_Create(Vector r, Vector t);
 
 #endif

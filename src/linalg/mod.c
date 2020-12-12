@@ -1,6 +1,7 @@
 #include "mod.h"
 
 // TODO :: Write utility to map 2d to 1d array indices
+// TODO :: Consider combining vector + quaternion functions
 
 // Utility to guard against unintialized matrices
 void zero_array(Mat4 mat) {
@@ -9,7 +10,7 @@ void zero_array(Mat4 mat) {
   }
 }
 
-// Matrix in copied to matrix out
+// M in copied to matrix out
 void copy_matrix(Mat4 in, Mat4 out) {
   for (int i = 0; i < ROWS * COLS; i++) {
     out[i] = in[i];
@@ -17,7 +18,7 @@ void copy_matrix(Mat4 in, Mat4 out) {
 }
 
 Vector array_to_vec(float vec[]) {
-  return (Vector){.x = vec[0], .y = vec[1], .z = vec[2]};
+  return (Vector){.x = vec[0], .y = vec[1], .z = vec[2], .w = vec[3]};
 }
 
 void print_matrix(Mat4 mat) {
@@ -48,7 +49,7 @@ Vector To_Quat(Vector v, float angle) {
 /* Vectors
  * -----------------------------------------------------------------------------
  */
-Vector Vector_Add(Vector a, Vector b) {
+Vector V_Add(Vector a, Vector b) {
   float v1[] = {a.x, a.y, a.z};
   float v2[] = {b.x, b.y, b.z};
 
@@ -57,7 +58,7 @@ Vector Vector_Add(Vector a, Vector b) {
   return array_to_vec(v2);
 }
 
-Vector Vector_Scale(Vector v, float scalar) {
+Vector V_Scale(Vector v, float scalar) {
   float vec[] = {v.x, v.y, v.z};
 
   cblas_sscal(3, scalar, vec, 1);
@@ -65,7 +66,7 @@ Vector Vector_Scale(Vector v, float scalar) {
   return array_to_vec(vec);
 }
 
-Vector Vector_Sub(Vector a, Vector b) {
+Vector V_Sub(Vector a, Vector b) {
   float v1[] = {a.x, a.y, a.z};
   float v2[] = {b.x, b.y, b.z};
 
@@ -75,25 +76,25 @@ Vector Vector_Sub(Vector a, Vector b) {
   return array_to_vec(v2);
 }
 
-float Vector_Dot(Vector a, Vector b) {
+float V_Dot(Vector a, Vector b) {
   float v1[] = {a.x, a.y, a.z};
   float v2[] = {b.x, b.y, b.z};
 
   return cblas_sdot(3, v1, 1, v2, 1);
 };
 
-float Vector_Mag(Vector v) {
+float V_Mag(Vector v) {
   float vec[] = {v.x, v.y, v.z};
 
   return cblas_snrm2(3, vec, 1);
 }
 
-Vector Vector_Norm(Vector v) {
+Vector V_Norm(Vector v) {
   // Divide by magnitude
-  return Vector_Scale(v, 1.0 / Vector_Mag(v));
+  return V_Scale(v, 1.0 / V_Mag(v));
 };
 
-Vector Vector_Cross(Vector a, Vector b) {
+Vector V_Cross(Vector a, Vector b) {
   return (Vector){.x = (a.y * b.z) - (a.z * b.y),
                   .y = (a.z * b.x) - (a.x * b.z),
                   .z = (a.x * b.y) - (a.y * b.x)};
@@ -103,7 +104,7 @@ Vector Vector_Cross(Vector a, Vector b) {
  * -----------------------------------------------------------------------------
  */
 
-/* Identity Matrix
+/* Identity M
  * ---------
  * |1 0 0 0|
  * |0 1 0 0|
@@ -111,7 +112,7 @@ Vector Vector_Cross(Vector a, Vector b) {
  * |0 0 0 1|
  * ---------
  */
-void Matrix_Ident(Mat4 mat) {
+void M_Ident(Mat4 mat) {
   zero_array(mat);
 
   mat[0] = 1;
@@ -122,8 +123,8 @@ void Matrix_Ident(Mat4 mat) {
 
 // Orthographic projection
 // Projects visible coordinates without perspective
-void Matrix_Ortho(float left, float right, float bottom, float top, float near,
-                  float far, Mat4 mat) {
+void M_Ortho(float left, float right, float bottom, float top, float near,
+             float far, Mat4 mat) {
 
   //  Guard against divide by zero
   if (!(right - left) || !(top - bottom) || !(far - near)) {
@@ -142,7 +143,7 @@ void Matrix_Ortho(float left, float right, float bottom, float top, float near,
   mat[15] = 1.0f;
 }
 
-void Matrix_Mult(Mat4 m1, Mat4 m2) {
+void M_Mult(Mat4 m1, Mat4 m2) {
   Mat4 result = {0};
 
   cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 4, 4, 4, 1.0, m1, 4,
@@ -152,22 +153,22 @@ void Matrix_Mult(Mat4 m1, Mat4 m2) {
 }
 
 // Apply translation to matrix
-void Matrix_Trans(Vector v, Mat4 mat) {
+void M_Trans(Vector v, Mat4 mat) {
   Mat4 trans;
 
-  Matrix_Ident(trans);
+  M_Ident(trans);
 
   trans[3] = v.x;
   trans[7] = v.y;
   trans[11] = v.z;
 
-  Matrix_Mult(mat, trans);
+  M_Mult(mat, trans);
 
   copy_matrix(trans, mat);
 };
 
 // Apply scale operation to matrix
-void Matrix_Scale(Vector v, Mat4 mat) {
+void M_Scale(Vector v, Mat4 mat) {
   Mat4 scale = {0};
 
   scale[0] = v.x;
@@ -175,7 +176,7 @@ void Matrix_Scale(Vector v, Mat4 mat) {
   scale[10] = v.z;
   scale[15] = 1;
 
-  Matrix_Mult(mat, scale);
+  M_Mult(mat, scale);
 
   copy_matrix(scale, mat);
 }
@@ -185,22 +186,30 @@ void Matrix_Scale(Vector v, Mat4 mat) {
  */
 
 // TODO :: Examine correctness of algorithm
-/* Vector Quat_Rot(Vector q, Vector pos) { */
-/*   Vector v1 = Vector_Scale(q, 2.0f * Vector_Dot(q, v)); */
-/*   Vector v2 = Vector_Scale(v, q.w * q.w - Vector_Dot(q, q)); */
-/*   Vector v3 = Vector_Scale(Vector_Cross(q, v), 2.0f * q.w); */
+/* Vector Q_Rot(Vector q, Vector pos) { */
+/*   Vector v1 = V_Scale(q, 2.0f * V_Dot(q, v)); */
+/*   Vector v2 = V_Scale(v, q.w * q.w - V_Dot(q, q)); */
+/*   Vector v3 = V_Scale(V_Cross(q, v), 2.0f * q.w); */
 
-/*   return Vector_Add(Vector_Add(v1, v2), v3); */
+/*   return V_Add(V_Add(v1, v2), v3); */
 /* } */
 
-Vector Quat_Mult(Vector q1, Vector q2) {
+Vector Q_Mult(Vector q1, Vector q2) {
   return (Vector){.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
                   .y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x,
                   .z = q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w,
                   .w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z};
 }
 
-Vector Quat_Norm(Vector q) {
+Vector Q_Scale(Vector q, float scl) {
+  float vec[] = {q.x, q.y, q.z, q.w};
+
+  cblas_sscal(4, scl, vec, 1);
+
+  return array_to_vec(vec);
+}
+
+Vector Q_Norm(Vector q) {
   float vec[] = {q.x, q.y, q.z, q.w};
   const float mag = cblas_snrm2(4, vec, 1);
 
@@ -213,7 +222,7 @@ Vector Quat_Norm(Vector q) {
   return (Vector){0};
 }
 
-Vector Quat_Inverse(Vector q) {
+Vector Q_Inverse(Vector q) {
   float scalar = 1 / (q.w * q.w + q.x * q.x + q.y * q.y + q.z * q.z);
 
   return (Vector){.x = -q.x * scalar,
@@ -221,3 +230,36 @@ Vector Quat_Inverse(Vector q) {
                   .z = -q.z * scalar,
                   .w = q.w * scalar};
 }
+
+// TODO :: Test
+float Q_Dot(Vector q1, Vector q2) {
+  float v1[] = {q1.x, q1.y, q1.z, q1.w};
+  float v2[] = {q2.x, q2.y, q2.z, q2.w};
+
+  return cblas_sdot(4, v1, 1, v2, 1);
+}
+
+// TODO :: Test
+float Q_Mag(Vector q) {
+  float vec[] = {q.x, q.y, q.z, q.w};
+
+  return cblas_snrm2(4, vec, 1);
+}
+
+/* Dual Quaternions
+ * -----------------------------------------------------------------------------
+ */
+
+// TODO :: Test
+DualQuat DQ_Create(Vector r, Vector t) {
+  Vector real = Q_Norm(r);
+
+  return (DualQuat){.real = real, .dual = Q_Scale(Q_Mult(t, real), 0.5f)};
+}
+
+DualQuat DQ_Scale(DualQuat dq, float scl) {
+  return (DualQuat){.real = Q_Scale(dq.real, scl),
+                    .dual = Q_Scale(dq.dual, scl)};
+}
+
+DualQuat DQ_Norm(DualQuat dq) { const float scl = 1.0f / Q_Mag(dq.real); }

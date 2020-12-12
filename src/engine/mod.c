@@ -66,8 +66,7 @@ GLuint Engine_Init(int width, int height) {
 
   // Projection set here due to fixed 2D nature of game.
   Mat4 projection = {0};
-  Matrix_Ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f,
-               projection);
+  M_Ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f, projection);
 
   glUseProgram(prog);
 
