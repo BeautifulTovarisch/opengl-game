@@ -55,11 +55,7 @@ void M_Scale(Vector v, Mat4 mat);
 Vector Q_Rot(Vector q, Vector v);
 Vector Q_Mult(Vector a, Vector b);
 Vector Q_Norm(Vector q);
-Vector Q_Scale(Vector q, float scl);
 Vector Q_Inverse(Vector a);
-
-float Q_Dot(Vector q1, Vector q2);
-float Q_Mag(Vector q);
 
 DualQuat DQ_Create(Vector r, Vector t);
 DualQuat DQ_Scale(DualQuat dq, float scl);

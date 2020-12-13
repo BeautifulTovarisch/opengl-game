@@ -1,7 +1,6 @@
 #include "mod.h"
 
 // TODO :: Write utility to map 2d to 1d array indices
-// TODO :: Consider combining vector + quaternion functions
 
 // Utility to guard against unintialized matrices
 void zero_array(Mat4 mat) {
@@ -57,18 +56,18 @@ Vector To_Quat(Vector v, float angle) {
  * -----------------------------------------------------------------------------
  */
 Vector V_Add(Vector a, Vector b) {
-  float v1[] = {a.x, a.y, a.z};
-  float v2[] = {b.x, b.y, b.z};
+  float v1[] = {a.x, a.y, a.z, a.w};
+  float v2[] = {b.x, b.y, b.z, b.w};
 
-  cblas_saxpy(3, 1, v1, 1, v2, 1);
+  cblas_saxpy(4, 1, v1, 1, v2, 1);
 
   return array_to_vec(v2);
 }
 
 Vector V_Scale(Vector v, float scalar) {
-  float vec[] = {v.x, v.y, v.z};
+  float vec[] = {v.x, v.y, v.z, v.w};
 
-  cblas_sscal(3, scalar, vec, 1);
+  cblas_sscal(4, scalar, vec, 1);
 
   return array_to_vec(vec);
 }
@@ -84,21 +83,30 @@ Vector V_Sub(Vector a, Vector b) {
 }
 
 float V_Dot(Vector a, Vector b) {
-  float v1[] = {a.x, a.y, a.z};
-  float v2[] = {b.x, b.y, b.z};
+  float v1[] = {a.x, a.y, a.z, a.w};
+  float v2[] = {b.x, b.y, b.z, b.w};
 
-  return cblas_sdot(3, v1, 1, v2, 1);
+  return cblas_sdot(4, v1, 1, v2, 1);
 };
 
 Vector V_Norm(Vector v) {
-  // Divide by magnitude
-  return V_Scale(v, 1.0 / vector_mag(v, 3));
-};
+  float vec[] = {v.x, v.y, v.z, v.w};
+  const float mag = cblas_snrm2(4, vec, 1);
+
+  if (mag > 0) {
+    cblas_sscal(4, 1 / mag, vec, 1);
+
+    return array_to_vec(vec);
+  }
+
+  return (Vector){0};
+}
 
 Vector V_Cross(Vector a, Vector b) {
   return (Vector){.x = (a.y * b.z) - (a.z * b.y),
                   .y = (a.z * b.x) - (a.x * b.z),
-                  .z = (a.x * b.y) - (a.y * b.x)};
+                  .z = (a.x * b.y) - (a.y * b.x),
+                  .w = 0};
 }
 
 /* Matrices
@@ -185,42 +193,19 @@ void M_Scale(Vector v, Mat4 mat) {
 /* Quaternions
  * -----------------------------------------------------------------------------
  */
+Vector Q_Rot(Vector q, Vector pos) {
+  Vector v_cross = V_Scale(V_Cross(q, pos), 2.0f);
+  Vector r = V_Add(V_Scale(v_cross, q.w), V_Cross(q, v_cross));
 
-// TODO :: Examine correctness of algorithm
-/* Vector Q_Rot(Vector q, Vector pos) { */
-/*   Vector v1 = V_Scale(q, 2.0f * V_Dot(q, v)); */
-/*   Vector v2 = V_Scale(v, q.w * q.w - V_Dot(q, q)); */
-/*   Vector v3 = V_Scale(V_Cross(q, v), 2.0f * q.w); */
+  return V_Add(pos, r);
+}
 
-/*   return V_Add(V_Add(v1, v2), v3); */
-/* } */
-
+// Equivalent to: (w1*w2 - (v1 dot v2), w1v2 + w2v1 + (v1 cross v2))
 Vector Q_Mult(Vector q1, Vector q2) {
   return (Vector){.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
                   .y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x,
                   .z = q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w,
                   .w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z};
-}
-
-Vector Q_Scale(Vector q, float scl) {
-  float vec[] = {q.x, q.y, q.z, q.w};
-
-  cblas_sscal(4, scl, vec, 1);
-
-  return array_to_vec(vec);
-}
-
-Vector Q_Norm(Vector q) {
-  float vec[] = {q.x, q.y, q.z, q.w};
-  const float mag = cblas_snrm2(4, vec, 1);
-
-  if (mag > 0) {
-    cblas_sscal(4, 1 / mag, vec, 1);
-
-    return array_to_vec(vec);
-  }
-
-  return (Vector){0};
 }
 
 Vector Q_Inverse(Vector q) {
@@ -232,31 +217,25 @@ Vector Q_Inverse(Vector q) {
                   .w = q.w * scalar};
 }
 
-float Q_Dot(Vector q1, Vector q2) {
-  float v1[] = {q1.x, q1.y, q1.z, q1.w};
-  float v2[] = {q2.x, q2.y, q2.z, q2.w};
-
-  return cblas_sdot(4, v1, 1, v2, 1);
-}
-
 /* Dual Quaternions
  * -----------------------------------------------------------------------------
  */
-
 DualQuat DQ_Create(Vector r, Vector t) {
-  Vector real = Q_Norm(r);
+  Vector real = V_Norm(r);
 
-  return (DualQuat){.real = real, .dual = Q_Scale(Q_Mult(t, real), 0.5f)};
+  return (DualQuat){.real = real, .dual = V_Scale(Q_Mult(t, real), 0.5f)};
 }
 
 DualQuat DQ_Scale(DualQuat dq, float scl) {
-  return (DualQuat){.real = Q_Scale(dq.real, scl),
-                    .dual = Q_Scale(dq.dual, scl)};
+  return (DualQuat){.real = V_Scale(dq.real, scl),
+                    .dual = V_Scale(dq.dual, scl)};
 }
 
 DualQuat DQ_Norm(DualQuat dq) {
   const float scl = 1.0f / vector_mag(dq.real, 4);
 
-  return (DualQuat){.real = Q_Scale(dq.real, scl),
-                    .dual = Q_Scale(dq.dual, scl)};
+  return (DualQuat){.real = V_Scale(dq.real, scl),
+                    .dual = V_Scale(dq.dual, scl)};
 }
+
+Vector DQ_Combine(DualQuat dq) { return Q_Mult(dq.real, dq.dual); }
