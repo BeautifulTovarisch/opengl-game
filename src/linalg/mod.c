@@ -113,7 +113,7 @@ Vector V_Cross(Vector a, Vector b) {
  * -----------------------------------------------------------------------------
  */
 
-/* Identity M
+/* Identity Matrix
  * ---------
  * |1 0 0 0|
  * |0 1 0 0|
@@ -161,7 +161,14 @@ void M_Mult(Mat4 m1, Mat4 m2) {
   copy_matrix(result, m2);
 }
 
-// Apply translation to matrix
+/* Apply translation to matrix
+ * ---------
+ * |1 0 0 x|
+ * |0 1 0 y|
+ * |0 0 1 z|
+ * |0 0 0 1|
+ * ---------
+ */
 void M_Trans(Vector v, Mat4 mat) {
   Mat4 trans;
 
@@ -176,7 +183,14 @@ void M_Trans(Vector v, Mat4 mat) {
   copy_matrix(trans, mat);
 };
 
-// Apply scale operation to matrix
+/* Apply scale operation to matrix
+ * ---------
+ * |x 0 0 0|
+ * |0 y 0 0|
+ * |0 0 z 0|
+ * |0 0 0 1|
+ * ---------
+ */
 void M_Scale(Vector v, Mat4 mat) {
   Mat4 scale = {0};
 

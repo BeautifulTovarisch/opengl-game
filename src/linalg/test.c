@@ -245,10 +245,6 @@ static void test_quat_mult(void **state) {
   vector_equal(Q_Mult(q1, q2), (Vector){2, 6, -4, -2});
 }
 
-static void test_quat_norm(void **state) {
-
-}
-
 static void test_quat_inverse(void **state) {
   vector_equal(Q_Inverse((Vector){0, 1, 0, 1}), (Vector){0, -0.5f, 0, 0.5f});
 }
@@ -301,7 +297,6 @@ int main(void) {
       cmocka_unit_test(test_translation_matrix),
       // Quaternion
       cmocka_unit_test(test_quat_mult), cmocka_unit_test(test_quat_inverse),
-      cmocka_unit_test(test_quat_norm),
       // Dual Quaternion
       cmocka_unit_test(test_dual_quat_create),
       cmocka_unit_test(test_dual_quat_scale),
