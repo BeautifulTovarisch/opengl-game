@@ -52,7 +52,6 @@ void Sprite_Draw(GLuint texture, GLuint VAO, GLuint prog, Mat4 poscr) {
 
   float angle = poscr[15];
 
-  /* M_Trans(pos, model); */
   M_Scale(size, model);
 
   // TODO :: Represent rotation and translation as dual quaternion from CPU

@@ -1,11 +1,11 @@
 # -*- Makefile -*-
 
-SRC := $(wildcard src/**/mod.c src/util/**/mod.c)
+SRC := $(wildcard src/**/mod.c src/linalg/**/mod.c)
 OBJ := $(SRC:.c=.o)
 
 TESTDIR := $(shell find src -name test.c -exec dirname {} \;)
 
-SUBDIRS := $(wildcard src/*/. src/util/*/.)
+SUBDIRS := $(wildcard src/*/. src/linalg/*/.)
 
 # Make flags available to subdirs
 export CFLAGS := `sdl2-config --libs --cflags` -ggdb3 -O0 --std=c99 -Wall -lGL -lglfw -lm -ldl -lblas
@@ -19,7 +19,6 @@ main: src/main.o $(SUBDIRS)
 
 test: $(TESTDIR)
 $(TESTDIR):
-	echo $@
 	$(MAKE) test -C $@
 
 .PHONY: test clean $(SUBDIRS) $(TESTDIR)
