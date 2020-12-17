@@ -55,17 +55,21 @@ void Sprite_Draw(GLuint texture, GLuint VAO, GLuint prog, Mat4 poscr) {
   M_Scale(size, model);
 
   // TODO :: Represent rotation and translation as dual quaternion from CPU
-  Vector quat = To_Quat(axis, angle);
+  Quaternion quat = Q_Create(axis, angle);
   DualQuat dq = DQ_Create(quat, pos);
 
-  printf("REAL %f %f %f %f\n\n", dq.real.x, dq.real.y, dq.real.z, dq.real.w);
-  printf("DUAL %f %f %f %f\n\n", dq.dual.x, dq.dual.y, dq.dual.z, dq.dual.w);
+  DualQuat norm = DQ_Norm(dq);
+
+  printf("REAL %f %f %f %f\n\n", norm.real.i, norm.real.j, norm.real.k,
+         norm.real.w);
+  printf("DUAL %f %f %f %f\n\n", norm.dual.i, norm.dual.j, norm.dual.k,
+         norm.dual.w);
 
   Shader_SetMatrix4(prog, "model", model);
   Shader_SetVector3(prog, "sprite_color", color);
 
-  Shader_SetVector4(prog, "rotation", dq.real);
-  Shader_SetVector4(prog, "translation", V_Norm(dq.dual));
+  Shader_SetVector4(prog, "rotation", (Vector){0});
+  Shader_SetVector4(prog, "translation", (Vector){0});
 
   glUseProgram(prog);
   glBindVertexArray(VAO);
