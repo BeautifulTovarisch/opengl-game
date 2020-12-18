@@ -22,5 +22,6 @@ Vector V_Scale(Vector v, float scalar);
 Vector V_Cross(Vector v1, Vector v2);
 
 float V_Dot(Vector v1, Vector v2);
+float V_Angle(Vector a, Vector b);
 
 #endif

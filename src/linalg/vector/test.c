@@ -96,6 +96,15 @@ static void test_vector_cross(void **state) {
   vector_equal(V_Cross(v1, v2), (Vector){-15, -2, 39});
 }
 
+static void test_vector_angle(void **state) {
+  Vector v1 = {8, 6, 2};
+  Vector v2 = {2, 9, -7};
+
+  assert_float_equal(V_Angle(v1, v2), 1.076545, 0);
+
+  assert_float_equal(V_Angle((Vector){0}, v2), 0, 0);
+}
+
 int main(void) {
   const struct CMUnitTest tests[] = {
       // Utility
@@ -105,7 +114,7 @@ int main(void) {
       cmocka_unit_test(test_vector_scale),
       cmocka_unit_test(test_vector_subtract), cmocka_unit_test(test_vector_dot),
       cmocka_unit_test(test_vector_normalize),
-      cmocka_unit_test(test_vector_cross)};
+      cmocka_unit_test(test_vector_cross), cmocka_unit_test(test_vector_angle)};
 
   return cmocka_run_group_tests(tests, NULL, NULL);
 }

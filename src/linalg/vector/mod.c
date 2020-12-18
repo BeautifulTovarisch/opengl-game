@@ -41,16 +41,9 @@ Vector V_Sub(Vector a, Vector b) {
   return array_to_vec(v2);
 }
 
-float V_Dot(Vector a, Vector b) {
-  float v1[] = {a.x, a.y, a.z};
-  float v2[] = {b.x, b.y, b.z};
-
-  return cblas_sdot(3, v1, 1, v2, 1);
-};
-
 Vector V_Norm(Vector v) {
   float vec[] = {v.x, v.y, v.z};
-  const float mag = cblas_snrm2(3, vec, 1);
+  float mag = cblas_snrm2(3, vec, 1);
 
   if (mag > 0) {
     cblas_sscal(3, 1 / mag, vec, 1);
@@ -65,4 +58,28 @@ Vector V_Cross(Vector a, Vector b) {
   return (Vector){.x = (a.y * b.z) - (a.z * b.y),
                   .y = (a.z * b.x) - (a.x * b.z),
                   .z = (a.x * b.y) - (a.y * b.x)};
+}
+
+float V_Dot(Vector a, Vector b) {
+  float v1[] = {a.x, a.y, a.z};
+  float v2[] = {b.x, b.y, b.z};
+
+  return cblas_sdot(3, v1, 1, v2, 1);
+};
+
+// Θ = cos^-1(A·B / |A||B|)
+float V_Angle(Vector a, Vector b) {
+  float v1[] = {a.x, a.y, a.z};
+  float v2[] = {b.x, b.y, b.z};
+
+  float m1 = cblas_snrm2(3, v1, 1);
+  float m2 = cblas_snrm2(3, v2, 1);
+
+  if (m1 * m2 == 0) {
+    return 0.0f;
+  }
+
+  float dot = cblas_sdot(3, v1, 1, v2, 1);
+
+  return acosf(dot / (sqrtf(m1) * sqrtf(m2)));
 }
