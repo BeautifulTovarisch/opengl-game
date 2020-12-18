@@ -15,13 +15,15 @@ typedef struct Vector {
 
 float To_Rad(float deg);
 
-Vector V_Add(Vector v1, Vector v2);
-Vector V_Sub(Vector v1, Vector v2);
+Vector V_Add(Vector a, Vector b);
+Vector V_Sub(Vector a, Vector b);
 Vector V_Norm(Vector v);
 Vector V_Scale(Vector v, float scalar);
-Vector V_Cross(Vector v1, Vector v2);
+Vector V_Cross(Vector a, Vector b);
+Vector V_Project(Vector a, Vector b);
+Vector V_Reject(Vector a, Vector b);
 
-float V_Dot(Vector v1, Vector v2);
+float V_Dot(Vector a, Vector b);
 float V_Angle(Vector a, Vector b);
 
 #endif

@@ -47,25 +47,17 @@ static void test_vector_add(void **state) {
 static void test_vector_divide(void **state) {
   Vector input = {.x = 2, .y = 2, .z = 2};
 
-  Vector result = V_Scale(input, 0.5);
-
-  assert_float_equal(result.x, 1.0, 0);
-  assert_float_equal(result.y, 1.0, 0);
-  assert_float_equal(result.z, 1.0, 0);
-
-  result = V_Scale(input, 0);
-
-  assert_float_equal(result.x, 0, 0);
-  assert_float_equal(result.y, 0, 0);
-  assert_float_equal(result.z, 0, 0);
+  vector_equal(V_Scale(input, 3), (Vector){6, 6, 6});
+  vector_equal(V_Scale(input, 0.5), (Vector){1, 1, 1});
 };
 
 static void test_vector_subtract(void **state) {
   Vector input = {1, 1};
   Vector result = V_Sub(input, (Vector){1, 1});
 
-  assert_float_equal(result.x, 0, 0);
-  assert_float_equal(result.y, 0, 0);
+  vector_equal(V_Sub((Vector){1, 1}, (Vector){1, 1}), (Vector){0, 0, 0});
+  vector_equal(V_Sub((Vector){-1, 3, 2}, (Vector){1, 2, 2}),
+               (Vector){-2, 1, 0});
 }
 
 static void test_vector_scale(void **state) {
@@ -105,6 +97,19 @@ static void test_vector_angle(void **state) {
   assert_float_equal(V_Angle((Vector){0}, v2), 0, 0);
 }
 
+static void test_vector_project(void **state) {
+  vector_equal(V_Project((Vector){-1, 4, 2}, (Vector){1, 0, 3}),
+               (Vector){0.5f, 0, 1.5f});
+
+  vector_equal(V_Project((Vector){-1, 3, 2}, (Vector){4, 8, 8}),
+               (Vector){1, 2, 2});
+}
+
+static void test_vector_reject(void **state) {
+  vector_equal(V_Reject((Vector){-1, 3, 2}, (Vector){4, 8, 8}),
+               (Vector){-2, 1, 0});
+}
+
 int main(void) {
   const struct CMUnitTest tests[] = {
       // Utility
@@ -114,7 +119,9 @@ int main(void) {
       cmocka_unit_test(test_vector_scale),
       cmocka_unit_test(test_vector_subtract), cmocka_unit_test(test_vector_dot),
       cmocka_unit_test(test_vector_normalize),
-      cmocka_unit_test(test_vector_cross), cmocka_unit_test(test_vector_angle)};
+      cmocka_unit_test(test_vector_cross), cmocka_unit_test(test_vector_angle),
+      cmocka_unit_test(test_vector_project),
+      cmocka_unit_test(test_vector_reject)};
 
   return cmocka_run_group_tests(tests, NULL, NULL);
 }

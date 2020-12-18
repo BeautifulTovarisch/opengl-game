@@ -6,6 +6,21 @@ Vector array_to_vec(float vec[]) {
   return (Vector){.x = vec[0], .y = vec[1], .z = vec[2], .w = 0};
 }
 
+// A·B
+float dot(Vector a, Vector b) {
+  float v1[] = {a.x, a.y, a.z};
+  float v2[] = {b.x, b.y, b.z};
+
+  return cblas_sdot(3, v1, 1, v2, 1);
+}
+
+// |A|
+float mag(Vector v) {
+  float vec[] = {v.x, v.y, v.z};
+
+  return cblas_snrm2(3, vec, 1);
+}
+
 /* Utilities
  * -----------------------------------------------------------------------------
  */
@@ -36,17 +51,17 @@ Vector V_Sub(Vector a, Vector b) {
   float v2[] = {b.x, b.y, b.z};
 
   // Scalar is -1 here . a + (-b)
-  cblas_saxpy(3, -1, v1, 1, v2, 1);
+  cblas_saxpy(3, -1, v2, 1, v1, 1);
 
-  return array_to_vec(v2);
+  return array_to_vec(v1);
 }
 
 Vector V_Norm(Vector v) {
   float vec[] = {v.x, v.y, v.z};
-  float mag = cblas_snrm2(3, vec, 1);
+  float mv = mag(v);
 
   if (mag > 0) {
-    cblas_sscal(3, 1 / mag, vec, 1);
+    cblas_sscal(3, 1 / mv, vec, 1);
 
     return array_to_vec(vec);
   }
@@ -60,26 +75,33 @@ Vector V_Cross(Vector a, Vector b) {
                   .z = (a.x * b.y) - (a.y * b.x)};
 }
 
-float V_Dot(Vector a, Vector b) {
+Vector V_Project(Vector a, Vector b) {
   float v1[] = {a.x, a.y, a.z};
   float v2[] = {b.x, b.y, b.z};
 
-  return cblas_sdot(3, v1, 1, v2, 1);
-};
+  float mb = mag(b);
+
+  if (!mb) {
+    return (Vector){0};
+  }
+
+  cblas_sscal(3, dot(a, b) / (mb * mb), v2, 1);
+
+  return array_to_vec(v2);
+}
+
+Vector V_Reject(Vector a, Vector b) { return V_Sub(a, V_Project(a, b)); }
+
+float V_Dot(Vector a, Vector b) { return dot(a, b); };
 
 // Θ = cos^-1(A·B / |A||B|)
 float V_Angle(Vector a, Vector b) {
-  float v1[] = {a.x, a.y, a.z};
-  float v2[] = {b.x, b.y, b.z};
-
-  float m1 = cblas_snrm2(3, v1, 1);
-  float m2 = cblas_snrm2(3, v2, 1);
+  float m1 = mag(a);
+  float m2 = mag(b);
 
   if (m1 * m2 == 0) {
     return 0.0f;
   }
 
-  float dot = cblas_sdot(3, v1, 1, v2, 1);
-
-  return acosf(dot / (sqrtf(m1) * sqrtf(m2)));
+  return acosf(dot(a, b) / (sqrtf(m1) * sqrtf(m2)));
 }
