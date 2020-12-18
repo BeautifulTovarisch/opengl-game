@@ -38,8 +38,7 @@ static void test_to_radians(void **state) {
  * -----------------------------------------------------------------------------
  */
 static void test_vector_add(void **state) {
-
-  /* vector_equal(V_Add((Vector){0}, (Vector){1, 1, 1}), (Vector){1, 1, 1}); */
+  vector_equal(V_Add((Vector){0}, (Vector){1, 1, 1}), (Vector){1, 1, 1});
   vector_equal(V_Add((Vector){1, 2, 3}, (Vector){-1, 3, -5}),
                (Vector){0, 5, -2});
 }
@@ -52,9 +51,6 @@ static void test_vector_divide(void **state) {
 };
 
 static void test_vector_subtract(void **state) {
-  Vector input = {1, 1};
-  Vector result = V_Sub(input, (Vector){1, 1});
-
   vector_equal(V_Sub((Vector){1, 1}, (Vector){1, 1}), (Vector){0, 0, 0});
   vector_equal(V_Sub((Vector){-1, 3, 2}, (Vector){1, 2, 2}),
                (Vector){-2, 1, 0});
@@ -76,9 +72,7 @@ static void test_vector_dot(void **state) {
   Vector a = {1, 2, 3};
   Vector b = {4, -5, 6};
 
-  float result = V_Dot(a, b);
-
-  assert_float_equal(result, 12.0, 0);
+  assert_float_equal(V_Dot(a, b), 12.0, 0);
 }
 
 static void test_vector_cross(void **state) {
