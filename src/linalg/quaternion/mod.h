@@ -8,6 +8,8 @@
 
 #include "../vector/mod.h"
 
+#define Q_EPSILON 0.000001f
+
 typedef struct Quaternion {
   float i;
   float j;
@@ -28,6 +30,13 @@ Quaternion Q_Scale(Quaternion q, float scalar);
 Quaternion Q_Inverse(Quaternion a);
 Quaternion Q_From_Axis(Vector v, float angle);
 Quaternion Q_From_Vectors(Vector from, Vector to);
+
+Vector Q_Axis(Quaternion q);
+
+int Q_Eq(Quaternion a, Quaternion b);
+
+float Q_Dot(Quaternion q);
+float Q_Angle(Quaternion q);
 
 DualQuat DQ_Create(Quaternion r, Vector t);
 DualQuat DQ_Scale(DualQuat dq, float scl);
