@@ -94,6 +94,35 @@ void M_Perspective(float fov, float aspect, float near, float far, Mat4 m) {
   M_Frust(-x_max, x_max, -y_max, y_max, near, far, m);
 }
 
+// Inverse of camera's tranformation
+void M_Look_At(Vector pos, Vector target, Vector up, Mat4 m) {
+  Vector f = V_Scale(V_Norm(V_Sub(target, pos)), -1.0f);
+  Vector r = V_Cross(up, f);
+
+  zero_array(m);
+
+  // If r == (0, 0, 0) return zero matrix
+  if (!r.x && !r.y && !r.z) {
+    return;
+  }
+
+  r = V_Norm(r);
+
+  Vector u = V_Norm(V_Cross(f, r));
+  Vector t = {-V_Dot(r, pos), -V_Dot(u, pos), -V_Dot(f, pos)};
+
+  /* Look At Matrix
+   * ---------------
+   * |r.x u.x f.x 0|
+   * |r.y u.y f.y 0|
+   * |r.z u.z f.z 0|
+   * |t.x t.y t.z 1|
+   * ---------------
+   */
+  m = (Mat4){r.x, u.x, f.x, 0, r.y, u.y, f.y, 0,
+             r.z, u.z, f.z, 0, t.x, u.x, t.z, 1};
+};
+
 /* Matrix operations
  * -----------------------------------------------------------------------------
  */

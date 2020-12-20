@@ -55,7 +55,7 @@ void Sprite_Draw(GLuint texture, GLuint VAO, GLuint prog, Mat4 poscr) {
   M_Scale(size, model);
 
   // TODO :: Represent rotation and translation as dual quaternion from CPU
-  Quaternion quat = Q_Create(axis, angle);
+  Quaternion quat = Q_From_Axis(axis, angle);
   DualQuat dq = DQ_Create(quat, pos);
 
   DualQuat norm = DQ_Norm(dq);

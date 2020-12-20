@@ -25,6 +25,8 @@ Vector V_Reject(Vector a, Vector b);
 Vector V_Reflect(Vector a, Vector b);
 Vector V_Lerp(Vector a, Vector b, float t, int normalize);
 
+int V_Eq(Vector a, Vector b);
+
 float V_Dot(Vector a, Vector b);
 float V_Angle(Vector a, Vector b);
 

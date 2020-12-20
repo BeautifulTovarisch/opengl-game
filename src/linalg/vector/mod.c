@@ -138,6 +138,8 @@ Vector V_Slerp(Vector a, Vector b, float t) {
   return add(scale(from, s), scale(to, e));
 }
 
+int V_Eq(Vector a, Vector b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
+
 float V_Dot(Vector a, Vector b) { return dot(a, b); };
 
 // Θ = cos^-1(A·B / |A||B|)

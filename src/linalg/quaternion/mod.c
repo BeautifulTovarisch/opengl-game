@@ -1,34 +1,46 @@
 #include "mod.h"
 
-/* Quaternions
- * -----------------------------------------------------------------------------
- */
+Quaternion array_to_quat(float vec[]) {
+  return (Quaternion){.i = vec[0], .j = vec[1], .k = vec[2], .w = vec[3]};
+}
 
 float q_mag(Quaternion q) {
   return cblas_snrm2(4, (float[]){q.i, q.j, q.k, q.w}, 1);
 }
 
-Quaternion array_to_quat(float vec[]) {
-  return (Quaternion){.i = vec[0], .j = vec[1], .k = vec[2], .w = vec[3]};
-}
-
-Quaternion Q_Add(Quaternion a, Quaternion b) {
+Quaternion q_add(Quaternion a, Quaternion b) {
   float v1[] = {a.i, a.j, a.k, a.w};
   float v2[] = {b.i, b.j, b.k, b.w};
 
   cblas_saxpy(4, 1, v1, 1, v2, 1);
 
   return array_to_quat(v2);
-}
+};
 
-Quaternion Q_Sub(Quaternion a, Quaternion b) {
+Quaternion q_sub(Quaternion a, Quaternion b) {
   float v1[] = {a.i, a.j, a.k, a.w};
   float v2[] = {b.i, b.j, b.k, b.w};
-  // Scalar is -1 here . a + (-b)
+
   cblas_saxpy(4, -1, v2, 1, v1, 1);
 
   return array_to_quat(v1);
-}
+};
+
+Quaternion q_scale(Quaternion q, float scalar) {
+  float vec[] = {q.i, q.j, q.k, q.w};
+
+  cblas_sscal(4, scalar, vec, 1);
+
+  return array_to_quat(vec);
+};
+
+/* Quaternions
+ * -----------------------------------------------------------------------------
+ */
+
+Quaternion Q_Add(Quaternion a, Quaternion b) { return q_add(a, b); }
+
+Quaternion Q_Sub(Quaternion a, Quaternion b) { return q_sub(a, b); }
 
 // Equivalent to: (w1*w2 - (v1 dot v2), w1v2 + w2v1 + (v1 cross v2))
 Quaternion Q_Mult(Quaternion q1, Quaternion q2) {
@@ -39,36 +51,17 @@ Quaternion Q_Mult(Quaternion q1, Quaternion q2) {
       .w = q1.w * q2.w - q1.i * q2.i - q1.j * q2.j - q1.k * q2.k};
 }
 
-Quaternion Q_Norm(Quaternion v) {
-  float vec[] = {v.i, v.j, v.k, v.w};
-  const float mag = cblas_snrm2(4, vec, 1);
+Quaternion Q_Norm(Quaternion q) {
+  float mq = q_mag(q);
 
-  if (mag > 0) {
-    cblas_sscal(4, 1 / mag, vec, 1);
-
-    return array_to_quat(vec);
+  if (mq > 0) {
+    return q_scale(q, 1 / mq);
   }
 
   return (Quaternion){0};
 }
 
-Quaternion Q_Scale(Quaternion v, float scalar) {
-  float vec[] = {v.i, v.j, v.k, v.w};
-
-  cblas_sscal(4, scalar, vec, 1);
-
-  return array_to_quat(vec);
-}
-
-/* Axis Angle -> Quaternion conversion
- * NOTE :: angle (Θ) must be in radians
- */
-Quaternion Q_Create(Vector v, float angle) {
-  return (Quaternion){.i = v.x * sin(angle * 0.5f),
-                      .j = v.y * sin(angle * 0.5f),
-                      .k = v.z * sin(angle * 0.5f),
-                      .w = cos(angle * 0.5f)};
-}
+Quaternion Q_Scale(Quaternion q, float scalar) { return q_scale(q, scalar); }
 
 Quaternion Q_Inverse(Quaternion q) {
   float scalar = 1 / (q.w * q.w + q.i * q.i + q.j * q.j + q.k * q.k);
@@ -77,6 +70,28 @@ Quaternion Q_Inverse(Quaternion q) {
                       .j = -q.j * scalar,
                       .k = -q.k * scalar,
                       .w = q.w * scalar};
+}
+
+/* Axis Angle -> Quaternion conversion
+ * NOTE :: angle (Θ) must be in radians
+ */
+Quaternion Q_From_Axis(Vector v, float angle) {
+  Vector norm = V_Norm(v);
+  float sin_theta = sin(angle * 0.5f);
+
+  return (Quaternion){.i = norm.x * sin_theta,
+                      .j = norm.y * sin_theta,
+                      .k = norm.z * sin_theta,
+                      .w = cos(angle * 0.5f)};
+}
+
+Quaternion Q_From_Vectors(Vector from, Vector to) {
+  Vector f_norm = V_Norm(from);
+  Vector t_norm = V_Norm(to);
+
+  if (V_Eq(f_norm, t_norm)) {
+    return (Quaternion){0, 0, 0, 1};
+  }
 }
 
 /* Dual Quaternions

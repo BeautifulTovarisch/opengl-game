@@ -26,6 +26,23 @@ void identity_matrix(Mat4 m) {
   m[15] = 1;
 }
 
+// Mocks
+// TODO :: Utilize CMocka's mocking suite
+Vector V_Add(Vector a, Vector b) { return (Vector){0}; };
+Vector V_Sub(Vector a, Vector b) { return (Vector){0}; };
+Vector V_Norm(Vector v) { return (Vector){0}; };
+Vector V_Scale(Vector v, float scalar) { return (Vector){0}; };
+Vector V_Cross(Vector a, Vector b) { return (Vector){0}; };
+Vector V_Project(Vector a, Vector b) { return (Vector){0}; };
+Vector V_Reject(Vector a, Vector b) { return (Vector){0}; };
+Vector V_Reflect(Vector a, Vector b) { return (Vector){0}; };
+Vector V_Lerp(Vector a, Vector b, float t, int normalize) {
+  return (Vector){0};
+};
+
+float V_Dot(Vector a, Vector b) { return 0.0f; };
+float V_Angle(Vector a, Vector b) { return 0.0f; };
+
 /* Matrix Tests
  * -----------------------------------------------------------------------------
  */
@@ -57,7 +74,7 @@ static void test_identity_matrix(void **state) {
  */
 static void test_orthographic_matrix(void **state) {
   Mat4 result;
-  Mat4 expected = {2, 0, 0, -1, 0, 2, 0, -1, 0, 0, -2, -1, 0, 0, 0, 1};
+  Mat4 expected = {2, 0, 0, 0, 0, 2, 0, 0, 0, 0, -2, 0, -1, -1, -1, 1};
 
   // Left, right, bottom, top, near, far
   M_Ortho(0, 1, 0, 1, 0, 1, result);

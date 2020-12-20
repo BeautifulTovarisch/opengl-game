@@ -25,8 +25,9 @@ Quaternion Q_Sub(Quaternion q1, Quaternion q2);
 Quaternion Q_Mult(Quaternion a, Quaternion b);
 Quaternion Q_Norm(Quaternion q);
 Quaternion Q_Scale(Quaternion q, float scalar);
-Quaternion Q_Create(Vector v, float angle);
 Quaternion Q_Inverse(Quaternion a);
+Quaternion Q_From_Axis(Vector v, float angle);
+Quaternion Q_From_Vectors(Vector from, Vector to);
 
 DualQuat DQ_Create(Quaternion r, Vector t);
 DualQuat DQ_Scale(DualQuat dq, float scl);

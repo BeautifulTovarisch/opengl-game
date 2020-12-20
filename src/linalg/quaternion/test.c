@@ -15,20 +15,26 @@ void quaternion_equal(Quaternion a, Quaternion b) {
   assert_float_equal(a.w, b.w, 10E-6);
 }
 
+// Mocks
+// TODO :: Utilize CMocka mocking facilities
+int V_Eq(Vector a, Vector b) { return 0; }
+Vector V_Norm(Vector v) { return v; }
+Vector V_Scale(Vector v, float scalar) { return v; }
+
 /* Utility Tests
  * -----------------------------------------------------------------------------
  */
 
-static void test_quat_create(void **state) {
+static void test_quat_from_axis(void **state) {
   // No Rotation
-  quaternion_equal(Q_Create((Vector){0, 0, 0}, 0), (Quaternion){0, 0, 0, 1});
+  quaternion_equal(Q_From_Axis((Vector){0, 0, 0}, 0), (Quaternion){0, 0, 0, 1});
 
   // 90 deg x
-  quaternion_equal(Q_Create((Vector){1, 0, 0}, PI / 2),
+  quaternion_equal(Q_From_Axis((Vector){1, 0, 0}, PI / 2),
                    (Quaternion){0.707107f, 0, 0, 0.707107f});
 
   // 45 deg z
-  quaternion_equal(Q_Create((Vector){1, 0, 0}, PI / 4),
+  quaternion_equal(Q_From_Axis((Vector){1, 0, 0}, PI / 4),
                    (Quaternion){0.382683f, 0, 0, 0.923880f});
 }
 
@@ -101,7 +107,7 @@ static void test_dual_quat_norm(void **state) {
 int main(void) {
   const struct CMUnitTest tests[] = {
       // Utility
-      cmocka_unit_test(test_quat_create),
+      cmocka_unit_test(test_quat_from_axis),
       // Quaternion
       cmocka_unit_test(test_quaternion_add),
       cmocka_unit_test(test_quaternion_subtract),

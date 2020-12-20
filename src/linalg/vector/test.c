@@ -48,7 +48,7 @@ static void test_vector_divide(void **state) {
 
   vector_equal(V_Scale(input, 3), (Vector){6, 6, 6});
   vector_equal(V_Scale(input, 0.5), (Vector){1, 1, 1});
-};
+}
 
 static void test_vector_subtract(void **state) {
   vector_equal(V_Sub((Vector){1, 1}, (Vector){1, 1}), (Vector){0, 0, 0});
@@ -102,6 +102,15 @@ static void test_vector_reject(void **state) {
                (Vector){-2, 1, 0});
 }
 
+static void test_vector_eq(void **state) {
+  assert_int_equal(V_Eq((Vector){0}, (Vector){0}), 1);
+  assert_int_equal(V_Eq((Vector){1, 2, 3}, (Vector){1, 2, 3}), 1);
+  assert_int_equal(V_Eq((Vector){1.1234, 2.5678, 0.09012},
+                        (Vector){1.1234, 2.5678, 0.09012}),
+                   1);
+  assert_int_equal(V_Eq((Vector){1, -1, 2.0f}, (Vector){-1, 1, 2.0f}), 0);
+}
+
 int main(void) {
   const struct CMUnitTest tests[] = {
       // Utility
@@ -113,7 +122,7 @@ int main(void) {
       cmocka_unit_test(test_vector_normalize),
       cmocka_unit_test(test_vector_cross), cmocka_unit_test(test_vector_angle),
       cmocka_unit_test(test_vector_project),
-      cmocka_unit_test(test_vector_reject)};
+      cmocka_unit_test(test_vector_reject), cmocka_unit_test(test_vector_eq)};
 
   return cmocka_run_group_tests(tests, NULL, NULL);
 }
