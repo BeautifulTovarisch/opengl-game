@@ -86,12 +86,31 @@ Quaternion Q_From_Axis(Vector v, float angle) {
 }
 
 Quaternion Q_From_Vectors(Vector from, Vector to) {
-  Vector f_norm = V_Norm(from);
-  Vector t_norm = V_Norm(to);
+  Vector f = V_Norm(from);
+  Vector t = V_Norm(to);
 
-  if (V_Eq(f_norm, t_norm)) {
+  // F = T
+  if (V_Eq(f, t)) {
     return (Quaternion){0, 0, 0, 1};
   }
+
+  Vector ortho = {1, 0, 0};
+
+  // F = -T
+  if (V_Eq(f, V_Scale(t, -1.0f))) {
+    ortho = fabsf(f.y) < fabsf(f.x) ? (Vector){0, 1, 0} : ortho;
+    ortho = fabsf(f.z) < fabs(f.y) && fabs(f.z) < fabsf(f.x) ? (Vector){0, 0, 1}
+                                                             : ortho;
+
+    // Q = cos(0), |F⨯O|
+    return Q_From_Axis(V_Norm(V_Cross(f, ortho)), 0);
+  }
+
+  // Create half-vector between From and To
+  Vector half = V_Norm(V_Add(f, t));
+
+  // Q = cos(F·H), F⨯H
+  return Q_From_Axis(V_Cross(f, half), V_Dot(f, half));
 }
 
 /* Dual Quaternions

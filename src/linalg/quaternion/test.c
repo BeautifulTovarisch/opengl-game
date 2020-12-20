@@ -18,8 +18,11 @@ void quaternion_equal(Quaternion a, Quaternion b) {
 // Mocks
 // TODO :: Utilize CMocka mocking facilities
 int V_Eq(Vector a, Vector b) { return 0; }
+float V_Dot(Vector a, Vector b) { return 0; }
+Vector V_Add(Vector a, Vector b) { return a; }
 Vector V_Norm(Vector v) { return v; }
 Vector V_Scale(Vector v, float scalar) { return v; }
+Vector V_Cross(Vector a, Vector b) { return (Vector){1, 0, 0}; }
 
 /* Utility Tests
  * -----------------------------------------------------------------------------
