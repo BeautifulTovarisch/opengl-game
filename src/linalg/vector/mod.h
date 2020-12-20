@@ -22,6 +22,8 @@ Vector V_Scale(Vector v, float scalar);
 Vector V_Cross(Vector a, Vector b);
 Vector V_Project(Vector a, Vector b);
 Vector V_Reject(Vector a, Vector b);
+Vector V_Reflect(Vector a, Vector b);
+Vector V_Lerp(Vector a, Vector b, float t, int normalize);
 
 float V_Dot(Vector a, Vector b);
 float V_Angle(Vector a, Vector b);

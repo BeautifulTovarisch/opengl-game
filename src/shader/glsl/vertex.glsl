@@ -19,5 +19,5 @@ void main()
 
   vec3 pos = transform(rotation, translation, vec3(vertex.xy, 0.0));
 
-  gl_Position = vec4(pos, 1.0) * model * projection;
+  gl_Position = projection * model * vec4(pos, 1.0);
 }

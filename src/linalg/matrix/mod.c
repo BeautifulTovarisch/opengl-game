@@ -16,17 +16,17 @@ void copy_matrix(Mat4 in, Mat4 out) {
   }
 }
 
-void print_matrix(Mat4 mat) {
+void print_matrix(Mat4 m) {
   for (int i = 0; i < 16; i++) {
     if (i % 4 == 0) {
       printf("\n");
     }
-    printf("%f ", mat[i]);
+    printf("%f ", m[i]);
   }
   printf("\n");
 }
 
-/* Matrices
+/* Projections and Frustra
  * -----------------------------------------------------------------------------
  */
 
@@ -38,35 +38,65 @@ void print_matrix(Mat4 mat) {
  * |0 0 0 1|
  * ---------
  */
-void M_Ident(Mat4 mat) {
-  zero_array(mat);
+void M_Ident(Mat4 m) {
+  zero_array(m);
 
-  mat[0] = 1;
-  mat[5] = 1;
-  mat[10] = 1;
-  mat[15] = 1;
+  m[0] = 1;
+  m[5] = 1;
+  m[10] = 1;
+  m[15] = 1;
 }
 
 // Orthographic projection
 // Projects visible coordinates without perspective
 void M_Ortho(float left, float right, float bottom, float top, float near,
-             float far, Mat4 mat) {
+             float far, Mat4 m) {
 
-  zero_array(mat);
+  zero_array(m);
 
   //  Guard against divide by zero
   if (!(right - left) || !(top - bottom) || !(far - near)) {
     return;
   }
 
-  mat[0] = 2.0f / (right - left);
-  mat[3] = -(right + left) / (right - left);
-  mat[5] = 2.0f / (top - bottom);
-  mat[7] = -(top + bottom) / (top - bottom);
-  mat[10] = -2.0f / (far - near);
-  mat[11] = -(far + near) / (far - near);
-  mat[15] = 1.0f;
+  m[0] = 2.0f / (right - left);
+  m[5] = 2.0f / (top - bottom);
+  m[10] = -2.0f / (far - near);
+  m[12] = -(right + left) / (right - left);
+  m[13] = -(top + bottom) / (top - bottom);
+  m[14] = -(far + near) / (far - near);
+  m[15] = 1.0f;
 }
+
+// Frustrum
+void M_Frust(float left, float right, float bottom, float top, float near,
+             float far, Mat4 m) {
+  zero_array(m);
+
+  if (left == right || top == bottom || near == far) {
+    return;
+  }
+
+  m[0] = (2.0f * near) / (right - left);
+  m[5] = (2.0f * near) / (top - bottom);
+  m[8] = (right + left) / (right - left);
+  m[9] = (top + bottom) / (top - bottom);
+  m[10] = (-(far + near)) / (far - near);
+  m[11] = -1.0f;
+  m[14] = (-2.0f * far * near) / (far - near);
+}
+
+// FOV, Aspect, and depth projection
+void M_Perspective(float fov, float aspect, float near, float far, Mat4 m) {
+  float y_max = near * tanf(fov * M_PI / 360.0f);
+  float x_max = y_max * aspect;
+
+  M_Frust(-x_max, x_max, -y_max, y_max, near, far, m);
+}
+
+/* Matrix operations
+ * -----------------------------------------------------------------------------
+ */
 
 void M_Mult(Mat4 m1, Mat4 m2) {
   Mat4 result = {0};
@@ -85,7 +115,7 @@ void M_Mult(Mat4 m1, Mat4 m2) {
  * |0 0 0 1|
  * ---------
  */
-void M_Trans(Vector v, Mat4 mat) {
+void M_Trans(Vector v, Mat4 m) {
   Mat4 trans;
 
   M_Ident(trans);
@@ -94,9 +124,9 @@ void M_Trans(Vector v, Mat4 mat) {
   trans[7] = v.y;
   trans[11] = v.z;
 
-  M_Mult(mat, trans);
+  M_Mult(m, trans);
 
-  copy_matrix(trans, mat);
+  copy_matrix(trans, m);
 };
 
 /* Apply scale operation to matrix
@@ -107,7 +137,7 @@ void M_Trans(Vector v, Mat4 mat) {
  * |0 0 0 1|
  * ---------
  */
-void M_Scale(Vector v, Mat4 mat) {
+void M_Scale(Vector v, Mat4 m) {
   Mat4 scale = {0};
 
   scale[0] = v.x;
@@ -115,7 +145,7 @@ void M_Scale(Vector v, Mat4 mat) {
   scale[10] = v.z;
   scale[15] = 1;
 
-  M_Mult(mat, scale);
+  M_Mult(m, scale);
 
-  copy_matrix(scale, mat);
+  copy_matrix(scale, m);
 }

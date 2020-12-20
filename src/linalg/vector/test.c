@@ -44,7 +44,7 @@ static void test_vector_add(void **state) {
 }
 
 static void test_vector_divide(void **state) {
-  Vector input = {.x = 2, .y = 2, .z = 2};
+  Vector input = {2, 2, 2};
 
   vector_equal(V_Scale(input, 3), (Vector){6, 6, 6});
   vector_equal(V_Scale(input, 0.5), (Vector){1, 1, 1});
@@ -86,15 +86,13 @@ static void test_vector_angle(void **state) {
   Vector v1 = {8, 6, 2};
   Vector v2 = {2, 9, -7};
 
-  assert_float_equal(V_Angle(v1, v2), 1.076545, 0);
-
+  assert_float_equal(V_Angle(v1, v2), 1.076546, 0);
   assert_float_equal(V_Angle((Vector){0}, v2), 0, 0);
 }
 
 static void test_vector_project(void **state) {
   vector_equal(V_Project((Vector){-1, 4, 2}, (Vector){1, 0, 3}),
                (Vector){0.5f, 0, 1.5f});
-
   vector_equal(V_Project((Vector){-1, 3, 2}, (Vector){4, 8, 8}),
                (Vector){1, 2, 2});
 }

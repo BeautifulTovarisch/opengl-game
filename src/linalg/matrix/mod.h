@@ -26,6 +26,8 @@ typedef float Mat4[ROWS * COLS];
 void M_Ident(Mat4 mat);
 void M_Ortho(float left, float right, float bottom, float top, float near,
              float far, Mat4 mat);
+void M_Frust(float left, float right, float bottom, float top, float near,
+             float far, Mat4 mat);
 void M_Mult(Mat4 m1, Mat4 out);
 void M_Trans(Vector v, Mat4 mat);
 void M_Scale(Vector v, Mat4 mat);

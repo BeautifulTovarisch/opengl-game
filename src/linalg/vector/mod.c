@@ -1,9 +1,39 @@
 #include "mod.h"
 
-// TODO :: Write utility to map 2d to 1d array indices
-
 Vector array_to_vec(float vec[]) {
   return (Vector){.x = vec[0], .y = vec[1], .z = vec[2], .w = 0};
+}
+
+// Various Vector operations implemented with cblas
+
+// A+B
+Vector add(Vector a, Vector b) {
+  float v1[] = {a.x, a.y, a.z, 0};
+  float v2[] = {b.x, b.y, b.z, 0};
+
+  cblas_saxpy(3, 1, v1, 1, v2, 1);
+
+  return array_to_vec(v2);
+}
+
+// A-B
+Vector sub(Vector a, Vector b) {
+  float v1[] = {a.x, a.y, a.z};
+  float v2[] = {b.x, b.y, b.z};
+
+  // Scalar is -1 here . a + (-b)
+  cblas_saxpy(3, -1, v2, 1, v1, 1);
+
+  return array_to_vec(v1);
+}
+
+// A*b
+Vector scale(Vector v, float scl) {
+  float vec[] = {v.x, v.y, v.z};
+
+  cblas_sscal(3, scl, vec, 1);
+
+  return array_to_vec(vec);
 }
 
 // A·B
@@ -21,6 +51,9 @@ float mag(Vector v) {
   return cblas_snrm2(3, vec, 1);
 }
 
+// |A|^2
+float magsq(Vector v) { return dot(v, v); }
+
 /* Utilities
  * -----------------------------------------------------------------------------
  */
@@ -29,41 +62,16 @@ float To_Rad(float deg) { return deg * ((float)M_PI / 180); }
 /* Vectors
  * -----------------------------------------------------------------------------
  */
-Vector V_Add(Vector a, Vector b) {
-  float v1[] = {a.x, a.y, a.z, 0};
-  float v2[] = {b.x, b.y, b.z, 0};
+Vector V_Add(Vector a, Vector b) { return add(a, b); }
+Vector V_Sub(Vector a, Vector b) { return sub(a, b); }
 
-  cblas_saxpy(3, 1, v1, 1, v2, 1);
-
-  return array_to_vec(v2);
-}
-
-Vector V_Scale(Vector v, float scalar) {
-  float vec[] = {v.x, v.y, v.z};
-
-  cblas_sscal(3, scalar, vec, 1);
-
-  return array_to_vec(vec);
-}
-
-Vector V_Sub(Vector a, Vector b) {
-  float v1[] = {a.x, a.y, a.z};
-  float v2[] = {b.x, b.y, b.z};
-
-  // Scalar is -1 here . a + (-b)
-  cblas_saxpy(3, -1, v2, 1, v1, 1);
-
-  return array_to_vec(v1);
-}
+Vector V_Scale(Vector v, float scalar) { return scale(v, scalar); }
 
 Vector V_Norm(Vector v) {
-  float vec[] = {v.x, v.y, v.z};
   float mv = mag(v);
 
   if (mag > 0) {
-    cblas_sscal(3, 1 / mv, vec, 1);
-
-    return array_to_vec(vec);
+    return scale(v, 1 / mv);
   }
 
   return (Vector){0};
@@ -76,21 +84,59 @@ Vector V_Cross(Vector a, Vector b) {
 }
 
 Vector V_Project(Vector a, Vector b) {
-  float v1[] = {a.x, a.y, a.z};
-  float v2[] = {b.x, b.y, b.z};
+  float mb = magsq(b);
 
+  if (!mb) {
+    return (Vector){0};
+  }
+
+  return scale(b, dot(a, b) / mb);
+}
+
+Vector V_Reject(Vector a, Vector b) { return sub(a, V_Project(a, b)); }
+
+// A - 2B(A·B / |B|)
+Vector V_Reflect(Vector a, Vector b) {
   float mb = mag(b);
 
   if (!mb) {
     return (Vector){0};
   }
 
-  cblas_sscal(3, dot(a, b) / (mb * mb), v2, 1);
-
-  return array_to_vec(v2);
+  return sub(a, scale(b, (dot(a, b) / mb) * 2));
 }
 
-Vector V_Reject(Vector a, Vector b) { return V_Sub(a, V_Project(a, b)); }
+// Normalized lerp performed when flag is set
+Vector V_Lerp(Vector a, Vector b, float t, int normalize) {
+  return normalize ? V_Norm((Vector){
+                         .x = (a.x - b.x) * t,
+                         .y = (a.y - b.y) * t,
+                         .z = (a.z - b.z) * t,
+                     })
+                   : (Vector){
+                         .x = (a.x - b.x) * t,
+                         .y = (a.y - b.y) * t,
+                         .z = (a.z - b.z) * t,
+                     };
+}
+
+// Useful for constant interpolation of velocity
+Vector V_Slerp(Vector a, Vector b, float t) {
+  // Fallback to linear interpolation when t is close to 0
+  if (t < 0.01f) {
+    return V_Lerp(a, b, t, 0);
+  }
+
+  Vector to = V_Norm(b);
+  Vector from = V_Norm(a);
+
+  float theta = V_Angle(from, to);
+  float sin_theta = sinf(theta);
+  float s = sinf((1.0f - t) * theta) / sin_theta;
+  float e = sinf(t * theta) / sin_theta;
+
+  return add(scale(from, s), scale(to, e));
+}
 
 float V_Dot(Vector a, Vector b) { return dot(a, b); };
 
@@ -103,5 +149,5 @@ float V_Angle(Vector a, Vector b) {
     return 0.0f;
   }
 
-  return acosf(dot(a, b) / (sqrtf(m1) * sqrtf(m2)));
+  return acosf(dot(a, b) / (m1 * m2));
 }
