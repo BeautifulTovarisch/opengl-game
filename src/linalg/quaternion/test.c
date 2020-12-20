@@ -75,6 +75,16 @@ static void test_quaternion_mult(void **state) {
 static void test_quaternion_inverse(void **state) {
   quaternion_equal(Q_Inverse((Quaternion){0, 1, 0, 1}),
                    (Quaternion){0, -0.5f, 0, 0.5f});
+  quaternion_equal(Q_Inverse((Quaternion){0}), (Quaternion){0});
+}
+
+static void test_quaternion_eq(void **state) {
+  assert_int_equal(Q_Eq((Quaternion){1, 1, 1, 1}, (Quaternion){1, 1, 1, 1}), 1);
+  assert_int_equal(Q_Eq((Quaternion){1, 0, -3, 1}, (Quaternion){1, 0, -3, 1}),
+                   1);
+  assert_int_equal(Q_Eq((Quaternion){0}, (Quaternion){0}), 1);
+  assert_int_equal(Q_Eq((Quaternion){1, 1, 1, -1}, (Quaternion){1, 1, 1, 1}),
+                   0);
 }
 
 /* Dual Quaternion Tests
@@ -120,7 +130,8 @@ int main(void) {
       // Dual Quaternion
       cmocka_unit_test(test_dual_quat_create),
       cmocka_unit_test(test_dual_quat_scale),
-      cmocka_unit_test(test_dual_quat_norm)};
+      cmocka_unit_test(test_dual_quat_norm),
+      cmocka_unit_test(test_quaternion_eq)};
 
   return cmocka_run_group_tests(tests, NULL, NULL);
 }

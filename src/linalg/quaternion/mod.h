@@ -26,16 +26,19 @@ Quaternion Q_Add(Quaternion q1, Quaternion q2);
 Quaternion Q_Sub(Quaternion q1, Quaternion q2);
 Quaternion Q_Mult(Quaternion a, Quaternion b);
 Quaternion Q_Norm(Quaternion q);
+Quaternion Q_Conj(Quaternion q);
 Quaternion Q_Scale(Quaternion q, float scalar);
 Quaternion Q_Inverse(Quaternion a);
 Quaternion Q_From_Axis(Vector v, float angle);
 Quaternion Q_From_Vectors(Vector from, Vector to);
+Quaternion Q_Mix(Quaternion a, Quaternion b, float t);
 
 Vector Q_Axis(Quaternion q);
+Vector Q_MultV(Quaternion q, Vector v);
 
 int Q_Eq(Quaternion a, Quaternion b);
 
-float Q_Dot(Quaternion q);
+float Q_Dot(Quaternion a, Quaternion b);
 float Q_Angle(Quaternion q);
 
 DualQuat DQ_Create(Quaternion r, Vector t);

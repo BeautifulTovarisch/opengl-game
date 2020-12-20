@@ -4,6 +4,7 @@ Quaternion array_to_quat(float vec[]) {
   return (Quaternion){.i = vec[0], .j = vec[1], .k = vec[2], .w = vec[3]};
 }
 
+// A+B
 Quaternion q_add(Quaternion a, Quaternion b) {
   float v1[] = {a.i, a.j, a.k, a.w};
   float v2[] = {b.i, b.j, b.k, b.w};
@@ -13,6 +14,7 @@ Quaternion q_add(Quaternion a, Quaternion b) {
   return array_to_quat(v2);
 };
 
+// A-B
 Quaternion q_sub(Quaternion a, Quaternion b) {
   float v1[] = {a.i, a.j, a.k, a.w};
   float v2[] = {b.i, b.j, b.k, b.w};
@@ -22,6 +24,7 @@ Quaternion q_sub(Quaternion a, Quaternion b) {
   return array_to_quat(v1);
 };
 
+// A*b
 Quaternion q_scale(Quaternion q, float scalar) {
   float vec[] = {q.i, q.j, q.k, q.w};
 
@@ -30,6 +33,20 @@ Quaternion q_scale(Quaternion q, float scalar) {
   return array_to_quat(vec);
 };
 
+// Q^e
+Quaternion q_pow(Quaternion q, float e) {
+  float theta = 2.0f * acosf(q.w);
+  Vector axis = V_Norm((Vector){q.i, q.j, q.k});
+
+  float sin_t = sinf(e * theta * 0.5f);
+
+  return (Quaternion){.i = axis.x * sin_t,
+                      .j = axis.y * sin_t,
+                      .k = axis.z * sin_t,
+                      .w = cosf(e * theta * 0.5f)};
+}
+
+// A·B
 float q_dot(Quaternion a, Quaternion b) {
   float v1[] = {a.i, a.j, a.k, a.w};
   float v2[] = {b.i, b.j, b.k, b.w};
@@ -37,10 +54,12 @@ float q_dot(Quaternion a, Quaternion b) {
   return cblas_sdot(4, v1, 1, v2, 1);
 }
 
+// |Q|
 float q_mag(Quaternion q) {
   return cblas_snrm2(4, (float[]){q.i, q.j, q.k, q.w}, 1);
 }
 
+// |Q|^2
 float q_mag_sq(Quaternion q) { return q_dot(q, q); }
 
 /* Quaternions
@@ -62,24 +81,21 @@ Quaternion Q_Mult(Quaternion q1, Quaternion q2) {
 Quaternion Q_Norm(Quaternion q) {
   float mq = q_mag(q);
 
-  if (mq > 0) {
-    return q_scale(q, 1 / mq);
-  }
-
-  return (Quaternion){0};
+  return mq > 0 ? q_scale(q, 1 / mq) : (Quaternion){0};
 }
+
+Quaternion Q_Conj(Quaternion q) { return (Quaternion){-q.i, -q.j, -q.k, q.w}; }
 
 Quaternion Q_Scale(Quaternion q, float scalar) { return q_scale(q, scalar); }
 
-Quaternion Q_Invert(Quaternion q) { return q_scale(q, -1.0f); }
-
 Quaternion Q_Inverse(Quaternion q) {
-  float scalar = 1 / (q.w * q.w + q.i * q.i + q.j * q.j + q.k * q.k);
+  float m_sq = q_mag_sq(q);
 
-  return (Quaternion){.i = -q.i * scalar,
-                      .j = -q.j * scalar,
-                      .k = -q.k * scalar,
-                      .w = q.w * scalar};
+  if (!m_sq) {
+    return (Quaternion){0};
+  }
+
+  return m_sq == 1 ? Q_Conj(q) : q_scale(Q_Conj(q), 1.0f / m_sq);
 }
 
 /* Axis Angle -> Quaternion conversion
@@ -123,7 +139,25 @@ Quaternion Q_From_Vectors(Vector from, Vector to) {
   return Q_From_Axis(V_Cross(f, half), V_Dot(f, half));
 }
 
-Vector Q_Axis(Quaternion q) { return V_Norm((Vector){q.i, q.j, q.k}); };
+Quaternion Q_Mix(Quaternion a, Quaternion b, float t) {
+  return q_add(q_scale(a, 1.0f - t), q_scale(b, t));
+}
+
+Quaternion Q_Nlerp(Quaternion a, Quaternion b, float t) {
+  return Q_Norm(Q_Add(a, q_scale(q_sub(b, a), t)));
+}
+
+Vector Q_Axis(Quaternion q) { return V_Norm((Vector){q.i, q.j, q.k}); }
+
+Vector Q_MultV(Quaternion q, Vector v) {
+  Vector q_vec = {q.i, q.j, q.k};
+
+  Vector a = V_Scale(q_vec, 2.0f * V_Dot(q_vec, v));
+  Vector b = V_Scale(v, q.w * q.w - V_Dot(q_vec, q_vec));
+  Vector c = V_Scale(V_Cross(q_vec, v), 2.0f * q.w);
+
+  return V_Add(a, V_Add(b, c));
+}
 
 int Q_Eq(Quaternion a, Quaternion b) {
   return fabs(a.j - b.j) <= Q_EPSILON && fabs(a.j - b.j) <= Q_EPSILON &&
@@ -131,6 +165,7 @@ int Q_Eq(Quaternion a, Quaternion b) {
 }
 
 float Q_Angle(Quaternion q) { return 2.0f * acosf(q.w); }
+float Q_Dot(Quaternion a, Quaternion b) { return q_dot(a, b); }
 
 /* Dual Quaternions
  * -----------------------------------------------------------------------------
