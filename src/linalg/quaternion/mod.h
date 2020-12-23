@@ -2,6 +2,7 @@
 #define QUATERNION_H
 
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include <cblas.h>
@@ -44,6 +45,9 @@ float Q_Angle(Quaternion q);
 DualQuat DQ_From_Quaternions(Quaternion r, Quaternion d);
 DualQuat DQ_From_Translation(Quaternion r, Vector t);
 
+DualQuat DQ_Pure_Rotation(Quaternion r);
+DualQuat DQ_Pure_Translation(Vector t);
+
 DualQuat DQ_Eq(DualQuat a, DualQuat b);
 DualQuat DQ_Add(DualQuat a, DualQuat b);
 DualQuat DQ_Conj(DualQuat dq);
@@ -55,5 +59,7 @@ Vector DQ_GetRotation(DualQuat dq);
 Vector DQ_GetTranslation(DualQuat dq);
 
 float DQ_Dot(DualQuat a, DualQuat b);
+
+void DQ_Print(DualQuat dq);
 
 #endif

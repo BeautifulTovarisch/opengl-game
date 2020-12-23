@@ -206,6 +206,14 @@ DualQuat DQ_From_Translation(Quaternion r, Vector t) {
   return (DualQuat){.real = real, .dual = Q_Scale(Q_Mult(dual, real), 0.5f)};
 }
 
+DualQuat DQ_Pure_Rotation(Quaternion r) {
+  return (DualQuat){.real = r, .dual = (Quaternion){0}};
+}
+
+DualQuat DQ_Pure_Translation(Vector t) {
+  return DQ_From_Translation((Quaternion){0, 0, 0, 1}, t);
+}
+
 DualQuat DQ_Conj(DualQuat dq) {
   return (DualQuat){.real = Q_Conj(dq.real), .dual = Q_Conj(dq.dual)};
 }
@@ -242,3 +250,8 @@ Vector DQ_GetTranslation(DualQuat dq) {
 }
 
 float DQ_Dot(DualQuat a, DualQuat b) { return q_dot(a.real, b.real); }
+
+void DQ_Print(DualQuat dq) {
+  printf("Real %f %f %f %f\n", dq.real.i, dq.real.j, dq.real.k, dq.real.w);
+  printf("Dual %f %f %f %f\n", dq.dual.i, dq.dual.j, dq.dual.k, dq.dual.w);
+}

@@ -21,7 +21,9 @@ void main()
 {
   tex_coord = vec2(vertex.z, vertex.w);
 
-  vec3 pos = transform(rotation, translation, vec3(vertex.xy, 0.0));
+  vec4 trans = projection * translation;
+
+  vec3 pos = transform(rotation, trans, vec3(vertex.xy, 0.0));
 
   gl_Position = projection * model * vec4(pos, 1.0);
 }

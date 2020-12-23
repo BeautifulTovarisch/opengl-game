@@ -54,15 +54,34 @@ void Sprite_Draw(GLuint texture, GLuint VAO, GLuint prog, Mat4 poscr) {
 
   M_Scale(size, model);
 
-  // TODO :: Represent rotation and translation as dual quaternion from CPU
-  Quaternion quat = Q_From_Axis(axis, angle);
-  DualQuat dq = DQ_From_Translation(quat, pos);
+  // Rotate about "center" of object
+  DualQuat to_center =
+      DQ_Pure_Translation((Vector){size.x * 0.5f, size.y * 0.5f, 0.0});
+
+  DualQuat rotate = DQ_Pure_Rotation(Q_From_Axis(axis, angle));
+
+  DualQuat to_orig_pt =
+      DQ_Pure_Translation((Vector){-size.x * 0.5f, -size.y * 0.5f, 0.0});
+
+  DualQuat to_pos = DQ_Pure_Translation(pos);
+
+  DualQuat transform =
+      DQ_Norm(DQ_Mult(DQ_Mult(DQ_Mult(to_pos, to_center), rotate), to_orig_pt));
+
+  /* DQ_Print(transform); */
+
+  for (int i = 0; i < 16; i++) {
+    i % 4 == 0 && printf("\n");
+    printf("%f ", model[i]);
+  }
+
+  printf("\n");
 
   Shader_SetMatrix4(prog, "model", model);
   Shader_SetVector3(prog, "sprite_color", color);
 
-  Shader_SetVector4(prog, "rotation", DQ_GetRotation(dq));
-  Shader_SetVector4(prog, "translation", V_Norm(DQ_GetTranslation(dq)));
+  Shader_SetVector4(prog, "rotation", DQ_GetRotation(transform));
+  Shader_SetVector4(prog, "translation", DQ_GetTranslation(transform));
 
   glUseProgram(prog);
   glBindVertexArray(VAO);
