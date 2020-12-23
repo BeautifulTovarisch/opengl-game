@@ -8,9 +8,13 @@ uniform vec4 rotation;
 uniform mat4 projection;
 uniform vec4 translation;
 
+vec3 rotate(vec4 real, vec3 pos) {
+  vec3 qv = real.xyz;
+  return qv * 2.0f * dot(qv, pos) + pos * (real.w * real.w - dot(qv, qv)) + cross(qv, pos) * 2.0f * real.w;
+}
+
 vec3 transform(vec4 real, vec4 dual, vec3 pos) {
-  vec3 rotn = pos + 2.0 * cross(real.xyz, cross(real.xyz, pos) + (real.w * pos));
-  return rotn + 2.0 * (real.w * dual.xyz - dual.w * real.xyz) + cross(real.xyz, dual.xyz);
+  return rotate(real, pos) + dual.xyz;
 }
 
 void main()

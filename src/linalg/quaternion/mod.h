@@ -41,8 +41,19 @@ int Q_Eq(Quaternion a, Quaternion b);
 float Q_Dot(Quaternion a, Quaternion b);
 float Q_Angle(Quaternion q);
 
-DualQuat DQ_Create(Quaternion r, Vector t);
-DualQuat DQ_Scale(DualQuat dq, float scl);
+DualQuat DQ_From_Quaternions(Quaternion r, Quaternion d);
+DualQuat DQ_From_Translation(Quaternion r, Vector t);
+
+DualQuat DQ_Eq(DualQuat a, DualQuat b);
+DualQuat DQ_Add(DualQuat a, DualQuat b);
+DualQuat DQ_Conj(DualQuat dq);
+DualQuat DQ_Mult(DualQuat a, DualQuat b);
 DualQuat DQ_Norm(DualQuat dq);
+DualQuat DQ_Scale(DualQuat dq, float scl);
+
+Vector DQ_GetRotation(DualQuat dq);
+Vector DQ_GetTranslation(DualQuat dq);
+
+float DQ_Dot(DualQuat a, DualQuat b);
 
 #endif

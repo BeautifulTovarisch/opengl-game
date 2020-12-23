@@ -17,6 +17,7 @@ float To_Rad(float deg);
 
 Vector V_Add(Vector a, Vector b);
 Vector V_Sub(Vector a, Vector b);
+Vector V_Mult(Vector a, Vector b);
 Vector V_Norm(Vector v);
 Vector V_Scale(Vector v, float scalar);
 Vector V_Cross(Vector a, Vector b);

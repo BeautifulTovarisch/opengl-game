@@ -64,6 +64,11 @@ float To_Rad(float deg) { return deg * ((float)M_PI / 180); }
  */
 Vector V_Add(Vector a, Vector b) { return add(a, b); }
 Vector V_Sub(Vector a, Vector b) { return sub(a, b); }
+
+Vector V_Mult(Vector a, Vector b) {
+  return (Vector){.x = a.x * b.x, .y = a.y * b.y, .z = a.z * b.z, .w = 0};
+}
+
 Vector V_Scale(Vector v, float scalar) { return scale(v, scalar); }
 
 Vector V_Norm(Vector v) {

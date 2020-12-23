@@ -147,6 +147,30 @@ Quaternion Q_Nlerp(Quaternion a, Quaternion b, float t) {
   return Q_Norm(Q_Add(a, q_scale(q_sub(b, a), t)));
 }
 
+Quaternion QSlerp(Quaternion a, Quaternion b, float t) {
+  if (fabsf(q_dot(a, b)) > 1.0f - Q_EPSILON) {
+    return Q_Nlerp(a, b, t);
+  }
+
+  Quaternion delta = Q_Mult(Q_Inverse(a), b);
+  return Q_Norm(Q_Mult(q_pow(delta, t), a));
+}
+
+Quaternion Q_LookAt(Vector direction, Vector up) {
+  Vector d = V_Norm(direction);
+  Vector u = V_Norm(up);
+  Vector r = V_Cross(u, d);
+
+  u = V_Cross(d, r);
+
+  Quaternion world_to_obj = Q_From_Vectors((Vector){0, 0, 1}, d);
+  Vector obj_up = Q_MultV(world_to_obj, (Vector){0, 1, 0});
+
+  Quaternion obj_up_to_dup = Q_From_Vectors(obj_up, u);
+
+  return Q_Norm(Q_Mult(world_to_obj, obj_up_to_dup));
+}
+
 Vector Q_Axis(Quaternion q) { return V_Norm((Vector){q.i, q.j, q.k}); }
 
 Vector Q_MultV(Quaternion q, Vector v) {
@@ -170,11 +194,34 @@ float Q_Dot(Quaternion a, Quaternion b) { return q_dot(a, b); }
 /* Dual Quaternions
  * -----------------------------------------------------------------------------
  */
-DualQuat DQ_Create(Quaternion r, Vector t) {
+
+DualQuat DQ_From_Quaternions(Quaternion r, Quaternion d) {
+  return (DualQuat){r, d};
+}
+
+DualQuat DQ_From_Translation(Quaternion r, Vector t) {
   Quaternion real = Q_Norm(r);
   Quaternion dual = (Quaternion){t.x, t.y, t.z, 0};
 
   return (DualQuat){.real = real, .dual = Q_Scale(Q_Mult(dual, real), 0.5f)};
+}
+
+DualQuat DQ_Conj(DualQuat dq) {
+  return (DualQuat){.real = Q_Conj(dq.real), .dual = Q_Conj(dq.dual)};
+}
+
+DualQuat DQ_Mult(DualQuat a, DualQuat b) {
+  return (DualQuat){.real = Q_Mult(a.real, b.real),
+                    .dual =
+                        Q_Add(Q_Mult(a.real, b.dual), Q_Mult(a.dual, b.real))};
+}
+
+DualQuat DQ_Norm(DualQuat dq) {
+  const float qm = q_mag(dq.real);
+
+  return qm > 0 ? (DualQuat){.real = Q_Scale(dq.real, 1.0f / qm),
+                             .dual = Q_Scale(dq.dual, 1.0f / qm)}
+                : (DualQuat){0};
 }
 
 DualQuat DQ_Scale(DualQuat dq, float scl) {
@@ -182,9 +229,16 @@ DualQuat DQ_Scale(DualQuat dq, float scl) {
                     .dual = Q_Scale(dq.dual, scl)};
 }
 
-DualQuat DQ_Norm(DualQuat dq) {
-  const float scl = 1.0f / q_mag(dq.real);
-
-  return (DualQuat){.real = Q_Scale(dq.real, scl),
-                    .dual = Q_Scale(dq.dual, scl)};
+Vector DQ_GetRotation(DualQuat dq) {
+  return (Vector){
+      .x = dq.real.i, .y = dq.real.j, .z = dq.real.k, .w = dq.real.w};
 }
+
+Vector DQ_GetTranslation(DualQuat dq) {
+  // Inverse operation of storing translation as dual component
+  Quaternion dual = Q_Mult(Q_Conj(dq.real), q_scale(dq.dual, 2.0f));
+
+  return (Vector){dual.i, dual.j, dual.k, 0};
+}
+
+float DQ_Dot(DualQuat a, DualQuat b) { return q_dot(a.real, b.real); }

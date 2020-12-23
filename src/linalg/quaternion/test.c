@@ -73,9 +73,9 @@ static void test_quaternion_mult(void **state) {
 }
 
 static void test_quaternion_inverse(void **state) {
+  quaternion_equal(Q_Inverse((Quaternion){0}), (Quaternion){0});
   quaternion_equal(Q_Inverse((Quaternion){0, 1, 0, 1}),
                    (Quaternion){0, -0.5f, 0, 0.5f});
-  quaternion_equal(Q_Inverse((Quaternion){0}), (Quaternion){0});
 }
 
 static void test_quaternion_eq(void **state) {
@@ -92,8 +92,8 @@ static void test_quaternion_eq(void **state) {
  */
 
 static void test_dual_quat_create(void **state) {
-  DualQuat dq = DQ_Create((Quaternion){0.707107f, 0, 0, 0.707107f},
-                          (Vector){0, 20, 0, 0});
+  DualQuat dq = DQ_From_Translation((Quaternion){0.707107f, 0, 0, 0.707107f},
+                                    (Vector){0, 20, 0, 0});
 
   quaternion_equal(dq.real, (Quaternion){0.707107f, 0, 0, 0.707107f});
   quaternion_equal(dq.dual, (Quaternion){0, 7.071068f, -7.071068f, 0});
